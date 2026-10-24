@@ -31,6 +31,9 @@ git push -u origin main
 4. Expand **Environment Variables** and add:
    - `GOOGLE_PLACES_API_KEY` = `AIzaSyDLnh-VwgBMRoDiz0gvaHD9UvIv8zoXcbA` (or your personal key)
    - `NEXT_PUBLIC_BASE_URL` = `https://<YOUR-PROJECT-NAME>.vercel.app` (leave blank initially or set to your Vercel URL)
+   - `AGENCY_SECRET_PASSCODE` = `your_secret_password_here` (Optional)
+     - **If left blank**: The Commander Panel (`/agency`) is **100% blocked and returns 404 Not Found** on Vercel to everyone (including clients). You can run it solely on your local PC.
+     - **If configured**: You can unlock the Commander Panel privately on Vercel by visiting `https://your-subdomain.vercel.app/agency?secret=your_secret_password_here`. Anyone else directly typing `/agency` gets a real `404 Not Found`.
 5. Click **Deploy**.
 
 ---
@@ -39,5 +42,7 @@ git push -u origin main
 
 Once Vercel finishes deploying (usually ~45 seconds):
 - **Public Agency Landing Page**: `https://<your-subdomain>.vercel.app/`
-- **Agency Commander Dashboard**: `https://<your-subdomain>.vercel.app/agency`
-- **Live Restaurant Prototypes**: `https://<your-subdomain>.vercel.app/s/artizen-cafe-baner`
+- **Live Restaurant Prototypes (Clients)**: `https://<your-subdomain>.vercel.app/s/artizen-cafe-baner`
+- **Agency Commander Dashboard (Cloaked)**:
+  - Accessible on your Local PC: `http://localhost:3000/agency` (No password needed)
+  - On Vercel: Returns **404 Not Found** to clients unless unlocked with `?secret=...`

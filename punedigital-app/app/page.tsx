@@ -86,18 +86,10 @@ export default function AgencyHomePage() {
             </button>
 
             <Link
-              href="/agency"
-              className="hidden sm:inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-amber-400/10 border border-amber-400/30 text-amber-300 hover:bg-amber-400/20 font-bold transition"
-            >
-              <Zap className="w-3.5 h-3.5 text-amber-400" />
-              <span>Commander Panel</span>
-            </Link>
-
-            <Link
               href="/s/artizen-cafe-baner"
               className="hidden md:inline-flex items-center gap-1.5 text-slate-300 hover:text-white transition px-3 py-1.5 rounded-lg hover:bg-slate-900"
             >
-              <span>Sample Demo</span>
+              <span>Live Sample Demo</span>
               <ArrowRight className="w-3.5 h-3.5" />
             </Link>
 
