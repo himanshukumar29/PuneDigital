@@ -1,0 +1,23 @@
+# Dependencies
+node_modules/
+punedigital-app/node_modules/
+
+# Next.js build
+punedigital-app/.next/
+punedigital-app/out/
+
+# Environment Variables
+.env
+.env*.local
+punedigital-app/.env
+punedigital-app/.env*.local
+
+# Logs and system artifacts
+*.log
+.system_generated/
+.gemini/
+.vercel
+
+# Operating System
+.DS_Store
+Thumbs.db

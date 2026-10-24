@@ -1,0 +1,157 @@
+{
+  "name": "02-Asset-and-Content-Pipeline",
+  "nodes": [
+    {
+      "parameters": {},
+      "id": "manual-trigger-2",
+      "name": "When clicking 'Test workflow'",
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [200, 300]
+    },
+    {
+      "parameters": {
+        "method": "GET",
+        "url": "={{ $env.SUPABASE_URL }}/rest/v1/leads?status=eq.new&select=*&limit=5",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "apikey",
+              "value": "={{ $env.SUPABASE_SERVICE_ROLE_KEY }}"
+            },
+            {
+              "name": "Authorization",
+              "value": "=Bearer {{ $env.SUPABASE_SERVICE_ROLE_KEY }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "fetch-new-leads",
+      "name": "Fetch New Leads from Supabase",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [440, 300]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "=https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key={{ $env.GEMINI_API_KEY }}",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"contents\": [{\n    \"parts\": [{\n      \"text\": \"You are an elite creative director and copywriter for luxury and artisanal restaurants in Pune, India.\\n\\nRestaurant Details:\\n- Name: \" + $json.name + \"\\n- Area: \" + $json.area + \"\\n- Rating: \" + $json.rating + \" (\" + $json.user_rating_count + \" reviews)\\n- Address: \" + $json.formatted_address + \"\\n- Type: \" + $json.primary_type + \"\\n\\nGenerate a complete JSON website config without any markdown wrapping. The JSON must have these exact keys:\\n{\\n  \\\"tagline\\\": \\\"string (punchy, evocative)\\\",\\n  \\\"about_story\\\": \\\"string (warm, 2-3 short engaging paragraphs)\\\",\\n  \\\"usp_bullets\\\": [\\\"bullet 1\\\", \\\"bullet 2\\\", \\\"bullet 3\\\"],\\n  \\\"meta_description\\\": \\\"string (under 160 chars)\\\",\\n  \\\"recommended_archetype\\\": \\\"artisanal-cafe\\\",\\n  \\\"primary_color\\\": \\\"#8B4513\\\",\\n  \\\"accent_color\\\": \\\"#D4A574\\\",\\n  \\\"curated_menu\\\": [\\n    {\\\"name\\\": \\\"Signature Dish 1\\\", \\\"price\\\": 340, \\\"category\\\": \\\"Specialties\\\", \\\"description\\\": \\\"Description with local Pune flair\\\", \\\"is_veg\\\": true},\\n    {\\\"name\\\": \\\"Signature Dish 2\\\", \\\"price\\\": 420, \\\"category\\\": \\\"Specialties\\\", \\\"description\\\": \\\"Chef special recipe\\\", \\\"is_veg\\\": false},\\n    {\\\"name\\\": \\\"Specialty Beverage\\\", \\\"price\\\": 210, \\\"category\\\": \\\"Beverages\\\", \\\"description\\\": \\\"Artisanal brewed beverage\\\", \\\"is_veg\\\": true}\\n  ],\\n  \\\"top_reviews\\\": [\\n    {\\\"author\\\": \\\"Rohit K.\\\", \\\"rating\\\": 5, \\\"text\\\": \\\"Amazing ambience and incredible quality in \" + $json.area + \"! A must visit.\\\"},\\n    {\\\"author\\\": \\\"Pooja S.\\\", \\\"rating\\\": 5, \\\"text\\\": \\\"Best cafe experience in the locality. Top notch service and delicious food.\\\"}\\n  ]\\n}\"\n    }]\n  }],\n  \"generationConfig\": {\n    \"responseMimeType\": \"application/json\"\n  }\n}",
+        "options": {}
+      },
+      "id": "gemini-synthesis",
+      "name": "Gemini AI Copy & Theme Synthesizer",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [680, 300]
+    },
+    {
+      "parameters": {
+        "jsCode": "const lead = $('Fetch New Leads from Supabase').item.json;\nconst geminiRaw = $input.item.json.candidates[0].content.parts[0].text;\nconst aiData = JSON.parse(geminiRaw);\n\n// Generate clean URL slug e.g. \"chafa-cafe-baner\"\nconst slug = (lead.name + '-' + lead.area)\n  .toLowerCase()\n  .replace(/[^a-z0-9]+/g, '-')\n  .replace(/^-|-$/g, '');\n\n// 7 days demo expiration\nconst expiresAt = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString();\n\n// Prepare sample photo list from raw references or curated fallbacks\nconst photoRefs = lead.raw_photo_references || [];\nconst photos = photoRefs.map(p => `https://places.googleapis.com/v1/${p.name}/media?maxHeightPx=1000&maxWidthPx=1400&key=${$env.GOOGLE_PLACES_API_KEY}`);\nconst heroImage = photos.length > 0 ? photos[0] : 'https://images.unsplash.com/photo-1554118811-1e0d58224f24?auto=format&fit=crop&w=1400&q=80';\n\nconst siteConfig = {\n  slug: slug,\n  lead_id: lead.id,\n  restaurant: {\n    name: lead.name,\n    area: lead.area,\n    tagline: aiData.tagline,\n    about: aiData.about_story,\n    phone: lead.national_phone_number,\n    address: lead.formatted_address,\n    maps_url: lead.google_maps_uri,\n    usp: aiData.usp_bullets || []\n  },\n  theme: {\n    archetype_id: aiData.recommended_archetype || 'artisanal-cafe',\n    primary_color: aiData.primary_color || '#8B4513',\n    accent_color: aiData.accent_color || '#D4A574'\n  },\n  assets: {\n    hero_image: heroImage,\n    photos: photos.slice(0, 6)\n  },\n  menu: aiData.curated_menu || [],\n  reviews: aiData.top_reviews || [],\n  pricing: {\n    tier1_price: 7999,\n    tier2_price: 14999,\n    tier3_price: 29999,\n    monthly_support: 1499,\n    special_offer: 'Launch Offer: Free .in Domain + QR Standees if claimed within 7 days'\n  },\n  demo: {\n    status: 'pending_review',\n    expires_at: expiresAt,\n    demo_url: `${$env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000'}/s/${slug}`\n  }\n};\n\nreturn [{ json: siteConfig }];"
+      },
+      "id": "build-site-config",
+      "name": "Build Site Config JSON",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [920, 300]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "={{ $env.SUPABASE_URL }}/rest/v1/site_configs?on_conflict=slug",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "apikey",
+              "value": "={{ $env.SUPABASE_SERVICE_ROLE_KEY }}"
+            },
+            {
+              "name": "Authorization",
+              "value": "=Bearer {{ $env.SUPABASE_SERVICE_ROLE_KEY }}"
+            },
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            },
+            {
+              "name": "Prefer",
+              "value": "resolution=merge-duplicates"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify($json) }}",
+        "options": {}
+      },
+      "id": "save-site-config",
+      "name": "Save Site Config in Supabase",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [1160, 300]
+    }
+  ],
+  "connections": {
+    "When clicking 'Test workflow'": {
+      "main": [
+        [
+          {
+            "node": "Fetch New Leads from Supabase",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Fetch New Leads from Supabase": {
+      "main": [
+        [
+          {
+            "node": "Gemini AI Copy & Theme Synthesizer",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Gemini AI Copy & Theme Synthesizer": {
+      "main": [
+        [
+          {
+            "node": "Build Site Config JSON",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Build Site Config JSON": {
+      "main": [
+        [
+          {
+            "node": "Save Site Config in Supabase",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  }
+}

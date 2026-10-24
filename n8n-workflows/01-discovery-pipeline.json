@@ -1,0 +1,188 @@
+{
+  "name": "01-Discovery-Pipeline-Pune",
+  "nodes": [
+    {
+      "parameters": {},
+      "id": "manual-trigger-1",
+      "name": "When clicking 'Test workflow'",
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [200, 300]
+    },
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "cronExpression",
+              "expression": "0 2 * * 1,4"
+            }
+          ]
+        }
+      },
+      "id": "schedule-trigger-1",
+      "name": "Mon & Thu at 2:00 AM",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.2,
+      "position": [200, 500]
+    },
+    {
+      "parameters": {
+        "jsCode": "return [\n  { json: { query: 'specialty cafe in Koregaon Park Pune', area: 'Koregaon Park' } },\n  { json: { query: 'bistro cafe in Kalyani Nagar Pune', area: 'Kalyani Nagar' } },\n  { json: { query: 'cafe in Balewadi High Street Pune', area: 'Balewadi' } },\n  { json: { query: 'artisan cafe in Baner Pune', area: 'Baner' } },\n  { json: { query: 'rooftop restaurant in Viman Nagar Pune', area: 'Viman Nagar' } },\n  { json: { query: 'cafe in FC Road Pune', area: 'FC Road' } },\n  { json: { query: 'bakery cafe in Kothrud Pune', area: 'Kothrud' } }\n];"
+      },
+      "id": "define-search-queries",
+      "name": "Define Pune Target Hubs",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [440, 400]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://places.googleapis.com/v1/places:searchText",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "X-Goog-Api-Key",
+              "value": "={{ $env.GOOGLE_PLACES_API_KEY }}"
+            },
+            {
+              "name": "X-Goog-FieldMask",
+              "value": "places.id,places.displayName,places.websiteUri,places.rating,places.userRatingCount,places.formattedAddress,places.nationalPhoneNumber,places.googleMapsUri,places.photos,places.primaryType,places.priceLevel,places.regularOpeningHours"
+            },
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "textQuery",
+              "value": "={{ $json.query }}"
+            },
+            {
+              "name": "pageSize",
+              "value": 20
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "places-text-search",
+      "name": "Google Places Text Search",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [680, 400]
+    },
+    {
+      "parameters": {
+        "jsCode": "const items = [];\nconst currentArea = $('Define Pune Target Hubs').item.json.area;\nconst places = $input.item.json.places || [];\n\nfor (const p of places) {\n  const website = (p.websiteUri || '').toLowerCase();\n  const hasNoRealWebsite = !website || \n    website.includes('instagram.com') || \n    website.includes('facebook.com') || \n    website.includes('zomato.com') || \n    website.includes('swiggy.com') || \n    website.includes('magicpin.in') ||\n    website.includes('linktr.ee');\n\n  const rating = p.rating || 0;\n  const reviews = p.userRatingCount || 0;\n\n  // Qualification filters: No real website + High performing spot (rating >= 4.1 & reviews >= 40)\n  if (hasNoRealWebsite && rating >= 4.1 && reviews >= 40) {\n    items.push({\n      json: {\n        place_id: p.id,\n        name: p.displayName?.text || 'Unnamed Restaurant',\n        area: currentArea,\n        formatted_address: p.formattedAddress || '',\n        national_phone_number: p.nationalPhoneNumber || '',\n        rating: rating,\n        user_rating_count: reviews,\n        price_level: p.priceLevel || 'PRICE_LEVEL_MODERATE',\n        primary_type: p.primaryType || 'restaurant',\n        google_maps_uri: p.googleMapsUri || '',\n        opening_hours: p.regularOpeningHours || {},\n        raw_photo_references: (p.photos || []).slice(0, 8),\n        status: 'new'\n      }\n    });\n  }\n}\n\nreturn items;"
+      },
+      "id": "filter-and-qualify",
+      "name": "Filter & Qualify Pune Leads",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [920, 400]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "={{ $env.SUPABASE_URL }}/rest/v1/leads?on_conflict=place_id",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "apikey",
+              "value": "={{ $env.SUPABASE_SERVICE_ROLE_KEY }}"
+            },
+            {
+              "name": "Authorization",
+              "value": "=Bearer {{ $env.SUPABASE_SERVICE_ROLE_KEY }}"
+            },
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            },
+            {
+              "name": "Prefer",
+              "value": "resolution=merge-duplicates"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify($json) }}",
+        "options": {}
+      },
+      "id": "supabase-upsert",
+      "name": "Upsert Leads to Supabase",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [1160, 400]
+    }
+  ],
+  "connections": {
+    "When clicking 'Test workflow'": {
+      "main": [
+        [
+          {
+            "node": "Define Pune Target Hubs",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Mon & Thu at 2:00 AM": {
+      "main": [
+        [
+          {
+            "node": "Define Pune Target Hubs",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Define Pune Target Hubs": {
+      "main": [
+        [
+          {
+            "node": "Google Places Text Search",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Places Text Search": {
+      "main": [
+        [
+          {
+            "node": "Filter & Qualify Pune Leads",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Filter & Qualify Pune Leads": {
+      "main": [
+        [
+          {
+            "node": "Upsert Leads to Supabase",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  }
+}

@@ -1,0 +1,225 @@
+{
+  "name": "03-Outreach-and-Followup-Pipeline",
+  "nodes": [
+    {
+      "parameters": {},
+      "id": "manual-trigger-3",
+      "name": "When clicking 'Test workflow'",
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [200, 300]
+    },
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "cronExpression",
+              "expression": "30 11 * * 1-5"
+            }
+          ]
+        }
+      },
+      "id": "schedule-trigger-3",
+      "name": "Mon-Fri at 11:30 AM (Pune Time)",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.2,
+      "position": [200, 500]
+    },
+    {
+      "parameters": {
+        "method": "GET",
+        "url": "={{ $env.SUPABASE_URL }}/rest/v1/leads?status=eq.approved&select=*,site_configs(slug,demo)&limit=10",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "apikey",
+              "value": "={{ $env.SUPABASE_SERVICE_ROLE_KEY }}"
+            },
+            {
+              "name": "Authorization",
+              "value": "=Bearer {{ $env.SUPABASE_SERVICE_ROLE_KEY }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "fetch-approved-leads",
+      "name": "Fetch Approved Leads",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [440, 400]
+    },
+    {
+      "parameters": {
+        "jsCode": "const items = [];\nconst records = Array.isArray($input.all()) ? $input.all().map(i => i.json) : [$input.item.json];\n\nfor (const lead of records) {\n  let phone = (lead.national_phone_number || '').replace(/[^0-9]/g, '');\n  if (phone.length === 10) phone = '91' + phone;\n  if (phone.length === 11 && phone.startsWith('0')) phone = '91' + phone.substring(1);\n\n  const site = Array.isArray(lead.site_configs) ? lead.site_configs[0] : lead.site_configs;\n  const slug = site?.slug || (lead.name || 'sample').toLowerCase().replace(/[^a-z0-9]+/g, '-');\n  const baseUrl = $env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000';\n  const demoUrl = `${baseUrl}/s/${slug}`;\n\n  const message = `Hi ${lead.name} team! 👋\\n\\nSaw your stellar ${lead.rating}⭐ rating with ${lead.user_rating_count}+ reviews in ${lead.area} — huge congratulations on the Pune foodie love!\\n\\nWe noticed you don\\'t have an official direct ordering website and are likely losing 25-28% commission to Zomato & Swiggy on regulars.\\n\\nWe built a high-speed, 0% commission digital prototype for ${lead.name} incorporating your Google Maps photos & verified reviews:\\n👉 ${demoUrl}\\n\\n✨ What\\'s inside the prototype:\\n- Scan-at-table dynamic QR menu\\n- Instant WhatsApp table booking\\n- 0% Commission direct UPI ordering engine\\n\\nSince this is an exclusive launch prototype for ${lead.area}, it includes a free .in domain + printed acrylic QR standees if claimed within 7 days.\\n\\nReply *YES* if you\\'d like us to link your bank account & hand over the admin keys!\\n\\nWarmly,\\nPuneDigital Team`;\n\n  items.push({\n    json: {\n      lead_id: lead.id,\n      restaurant_name: lead.name,\n      phone: phone,\n      slug: slug,\n      demo_url: demoUrl,\n      message: message\n    }\n  });\n}\n\nreturn items;"
+      },
+      "id": "format-whatsapp-payload",
+      "name": "Format WhatsApp Pitch",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [680, 400]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "={{ $env.EVOLUTION_API_URL || 'http://localhost:8080' }}/message/sendText/{{ $env.EVOLUTION_INSTANCE_NAME || 'punedigital' }}",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "apikey",
+              "value": "={{ $env.EVOLUTION_API_KEY || 'pune_digital_secret_api_key_2026' }}"
+            },
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"number\": \"{{ $json.phone }}\",\n  \"options\": {\n    \"delay\": 1200,\n    \"presence\": \"composing\"\n  },\n  \"textMessage\": {\n    \"text\": \"{{ $json.message }}\"\n  }\n}",
+        "options": {}
+      },
+      "id": "send-whatsapp-message",
+      "name": "Send WhatsApp via Evolution API",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [920, 400]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "={{ $env.SUPABASE_URL }}/rest/v1/outreach_logs",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "apikey",
+              "value": "={{ $env.SUPABASE_SERVICE_ROLE_KEY }}"
+            },
+            {
+              "name": "Authorization",
+              "value": "=Bearer {{ $env.SUPABASE_SERVICE_ROLE_KEY }}"
+            },
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"lead_id\": \"{{ $('Format WhatsApp Pitch').item.json.lead_id }}\",\n  \"channel\": \"whatsapp\",\n  \"recipient\": \"{{ $('Format WhatsApp Pitch').item.json.phone }}\",\n  \"message_body\": \"{{ $('Format WhatsApp Pitch').item.json.message }}\",\n  \"status\": \"sent\"\n}",
+        "options": {}
+      },
+      "id": "log-outreach",
+      "name": "Log to Supabase outreach_logs",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [1160, 400]
+    },
+    {
+      "parameters": {
+        "method": "PATCH",
+        "url": "={{ $env.SUPABASE_URL }}/rest/v1/leads?id=eq.{{ $('Format WhatsApp Pitch').item.json.lead_id }}",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "apikey",
+              "value": "={{ $env.SUPABASE_SERVICE_ROLE_KEY }}"
+            },
+            {
+              "name": "Authorization",
+              "value": "=Bearer {{ $env.SUPABASE_SERVICE_ROLE_KEY }}"
+            },
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"status\": \"contacted\"\n}",
+        "options": {}
+      },
+      "id": "update-lead-status",
+      "name": "Mark Lead as Contacted",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [1400, 400]
+    }
+  ],
+  "connections": {
+    "When clicking 'Test workflow'": {
+      "main": [
+        [
+          {
+            "node": "Fetch Approved Leads",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Mon-Fri at 11:30 AM (Pune Time)": {
+      "main": [
+        [
+          {
+            "node": "Fetch Approved Leads",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Fetch Approved Leads": {
+      "main": [
+        [
+          {
+            "node": "Format WhatsApp Pitch",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Format WhatsApp Pitch": {
+      "main": [
+        [
+          {
+            "node": "Send WhatsApp via Evolution API",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send WhatsApp via Evolution API": {
+      "main": [
+        [
+          {
+            "node": "Log to Supabase outreach_logs",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Log to Supabase outreach_logs": {
+      "main": [
+        [
+          {
+            "node": "Mark Lead as Contacted",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  }
+}

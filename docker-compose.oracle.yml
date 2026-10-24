@@ -1,0 +1,50 @@
+# ==============================================================================
+# Production Docker Compose for Oracle Cloud (Ampere ARM A1, 4 OCPU, 24GB RAM)
+# Runs 24/7 with zero hosting cost.
+# ==============================================================================
+services:
+  n8n:
+    image: docker.n8n.io/n8nio/n8n:latest
+    container_name: n8n_production
+    restart: always
+    ports:
+      - "5678:5678"
+    environment:
+      - N8N_HOST=0.0.0.0
+      - N8N_PORT=5678
+      - N8N_PROTOCOL=http
+      - NODE_ENV=production
+      - WEBHOOK_URL=http://localhost:5678/
+      - GENERIC_TIMEZONE=Asia/Kolkata
+      - TZ=Asia/Kolkata
+      - EXECUTIONS_DATA_PRUNE=true
+      - EXECUTIONS_DATA_MAX_AGE=168
+    volumes:
+      - n8n_data:/home/node/.n8n
+
+  evolution-api:
+    image: atendai/evolution-api:latest
+    container_name: evolution_api
+    restart: always
+    ports:
+      - "8080:8080"
+    environment:
+      - SERVER_PORT=8080
+      - AUTHENTICATION_API_KEY=PuneDigitalSecretKey2026
+      - DATABASE_PROVIDER=local
+    volumes:
+      - evolution_instances:/evolution/instances
+
+  browserless:
+    image: browserless/chrome:latest
+    container_name: browserless_chrome
+    restart: always
+    ports:
+      - "3000:3000"
+    environment:
+      - MAX_CONCURRENT_SESSIONS=3
+      - CONNECTION_TIMEOUT=60000
+
+volumes:
+  n8n_data:
+  evolution_instances:
