@@ -7,6 +7,7 @@ import { THEME_MAP, ArchetypeId } from "@/lib/theme-map";
 import { AestheticFX } from "@/components/aesthetic-fx";
 import { AnimatedBackground } from "@/components/animated-background";
 import { CustomCursor } from "@/components/custom-cursor";
+import { getSmartVenuePhotos } from "@/lib/venue-photo-intelligence";
 
 // Curated demo profiles for Pune leads
 const MOCK_RESTAURANTS: Record<string, any> = {
@@ -224,10 +225,33 @@ export default function DemoRestaurantPage({ params }: { params: { slug: string 
     const queryName = searchParams?.get("name");
     const queryArea = searchParams?.get("area");
     const placeId = searchParams?.get("placeId");
+    const queryKey = searchParams?.get("key");
+
+    // Persist API key in localStorage across tabs & reloads
+    const activeKey = queryKey || (typeof window !== "undefined" ? localStorage.getItem("punedigital_google_key") : null) || "";
+    if (queryKey && typeof window !== "undefined") {
+      try {
+        localStorage.setItem("punedigital_google_key", queryKey);
+      } catch (e) {
+        // ignore quota error
+      }
+    }
 
     const raw = MOCK_RESTAURANTS[params.slug] || MOCK_RESTAURANTS["artizen-cafe-baner"] || MOCK_RESTAURANTS["default"];
     const restaurantName = queryName || (raw.slug === params.slug ? raw.restaurant.name : params.slug.split("-").map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(" "));
     const restaurantArea = queryArea || raw.restaurant.area || "Baner, Pune";
+
+    // Immediate brand-specific venue photo intelligence
+    const smartPhotos = getSmartVenuePhotos(restaurantName);
+
+    // Auto-detect best theme archetype from venue name
+    const lowerName = restaurantName.toLowerCase();
+    let detectedTheme: ArchetypeId = raw.theme?.archetype_id || "artisanal-cafe";
+    if (lowerName.includes("brew") || lowerName.includes("bar") || lowerName.includes("pub") || lowerName.includes("lounge") || lowerName.includes("tap") || lowerName.includes("deck") || lowerName.includes("night")) {
+      detectedTheme = "resto-bar";
+    } else if (lowerName.includes("burger") || lowerName.includes("pizza") || lowerName.includes("qsr") || lowerName.includes("fast") || lowerName.includes("crave") || lowerName.includes("fries")) {
+      detectedTheme = "street-qsr";
+    }
 
     const formatted = {
       ...raw,
@@ -235,17 +259,22 @@ export default function DemoRestaurantPage({ params }: { params: { slug: string 
         ...raw.restaurant,
         name: restaurantName,
         area: restaurantArea,
+      },
+      theme: {
+        ...raw.theme,
+        archetype_id: detectedTheme,
+      },
+      assets: {
+        hero_image: smartPhotos[0]?.url || raw.assets.hero_image,
+        photos: smartPhotos,
       }
     };
     setConfig(formatted);
-    if (formatted.theme?.archetype_id) {
-      setActiveTheme(formatted.theme.archetype_id);
-    }
+    setActiveTheme(detectedTheme);
 
     // Background live Google Places sync for real metadata & photos
     const searchQuery = `${restaurantName} ${restaurantArea}`;
-    const themeParam = formatted.theme?.archetype_id || "artisanal-cafe";
-    const endpoint = `/api/places/live?query=${encodeURIComponent(searchQuery)}&theme=${encodeURIComponent(themeParam)}${placeId ? `&placeId=${encodeURIComponent(placeId)}` : ''}`;
+    const endpoint = `/api/places/live?query=${encodeURIComponent(searchQuery)}&theme=${encodeURIComponent(detectedTheme)}${placeId ? `&placeId=${encodeURIComponent(placeId)}` : ''}${activeKey ? `&key=${encodeURIComponent(activeKey)}` : ''}`;
 
     fetch(endpoint)
       .then(res => res.json())

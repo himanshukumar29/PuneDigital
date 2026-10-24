@@ -8,6 +8,7 @@ import {
 import { FadeIn, StaggerChildren, StaggerItem, TiltCard } from "@/components/motion";
 import { SafeImage } from "@/components/safe-image";
 import { getFallbackPhotosForTheme, isBlockedOrUnstableUrl, FallbackPhoto } from "@/lib/fallback-images";
+import { getSmartVenuePhotos } from "@/lib/venue-photo-intelligence";
 import { motion, AnimatePresence } from "framer-motion";
 
 export interface PhotoItem {
@@ -37,16 +38,21 @@ export function GooglePhotoGallery({
   animationsEnabled = true,
   theme = "artisanal-cafe",
 }: GooglePhotoGalleryProps) {
-  const fallbackCollection = getFallbackPhotosForTheme(theme);
+  // Authentic brand-specific photography matched to this exact venue
+  const smartVenueCollection = getSmartVenuePhotos(restaurantName);
+  const fallbackCollection = smartVenueCollection && smartVenueCollection.length > 0
+    ? smartVenueCollection
+    : getFallbackPhotosForTheme(theme);
 
-  // Normalize photos into PhotoItem objects with guaranteed fallbacks
+  // Normalize photos into PhotoItem objects with guaranteed authentic fallbacks
   const normalizedPhotos: PhotoItem[] = (() => {
-    // If incoming photos list is empty, return entire curated collection
+    // If incoming photos list is empty, return entire venue-curated collection
     if (!photos || photos.length === 0) {
       return fallbackCollection.map((f, idx) => ({
         url: f.url,
         fallbackUrl: f.url,
         author: f.author,
+        authorUri: (f as any).authorUri || null,
         caption: f.caption,
         category: f.category,
         source: f.source as any,

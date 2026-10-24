@@ -9,6 +9,7 @@ import {
 } from "lucide-react";
 import { SafeImage } from "@/components/safe-image";
 import { getHeroFallback } from "@/lib/fallback-images";
+import { getSmartVenuePhotos } from "@/lib/venue-photo-intelligence";
 import { CustomCursor } from "@/components/custom-cursor";
 import { AnimatedBackground } from "@/components/animated-background";
 import { AestheticFX } from "@/components/aesthetic-fx";
@@ -59,8 +60,40 @@ export default function AgencyCommanderPage() {
   React.useEffect(() => {
     if (typeof window !== "undefined") {
       setPublicBaseUrl(window.location.origin);
+      const savedKey = localStorage.getItem("punedigital_google_key");
+      if (savedKey) {
+        setApiKey(savedKey);
+      }
     }
   }, []);
+
+  const handleApiKeyChange = (val: string) => {
+    setApiKey(val);
+    if (typeof window !== "undefined") {
+      if (val.trim()) {
+        try {
+          localStorage.setItem("punedigital_google_key", val.trim());
+        } catch (e) {}
+      } else {
+        localStorage.removeItem("punedigital_google_key");
+      }
+    }
+  };
+
+  const getDemoUrlWithKey = (url: string) => {
+    if (!apiKey) return url;
+    try {
+      const u = new URL(url, publicBaseUrl);
+      if (!u.searchParams.get("key")) {
+        u.searchParams.set("key", apiKey.trim());
+      }
+      return u.toString();
+    } catch {
+      return url.includes("?")
+        ? `${url}&key=${encodeURIComponent(apiKey.trim())}`
+        : `${url}?key=${encodeURIComponent(apiKey.trim())}`;
+    }
+  };
 
   // Outreach Modal State
   const [activeLead, setActiveLead] = useState<Lead | null>(null);
@@ -119,7 +152,10 @@ export default function AgencyCommanderPage() {
   const openOutreachModal = (lead: Lead, channel: "whatsapp" | "email") => {
     setActiveLead(lead);
     setPitchChannel(channel);
-    setEditablePitch(channel === "whatsapp" ? lead.whatsappPitch : lead.emailPitch);
+    const activeDemoUrl = getDemoUrlWithKey(lead.demoUrl);
+    const rawPitch = channel === "whatsapp" ? lead.whatsappPitch : lead.emailPitch;
+    const finalPitch = rawPitch.replace(lead.demoUrl, activeDemoUrl);
+    setEditablePitch(finalPitch);
     setEditableSubject(lead.emailSubject);
     setCopiedState(false);
   };
@@ -221,13 +257,13 @@ export default function AgencyCommanderPage() {
               <div className="space-y-2">
                 <label className="text-xs font-black uppercase tracking-wider text-slate-300 flex items-center justify-between">
                   <span>Google Places API Key</span>
-                  <span className="text-[10px] text-amber-400 font-normal">{apiKey ? "Custom Key Active" : "Using Env / Live Scraper"}</span>
+                  <span className="text-[10px] text-amber-400 font-normal">{apiKey ? "Key Saved & Synced to Demos" : "Optional (Curated pipeline ready)"}</span>
                 </label>
                 <input
                   type="text"
                   value={apiKey}
-                  onChange={(e) => setApiKey(e.target.value)}
-                  placeholder="Enter Google Places API Key (or configure in .env)"
+                  onChange={(e) => handleApiKeyChange(e.target.value)}
+                  placeholder="Enter Google Places API Key (saved across sessions)"
                   className="w-full bg-slate-950 border border-slate-800 rounded-xl px-3.5 py-2.5 text-xs text-slate-200 focus:outline-none focus:border-amber-500/60 font-mono"
                 />
               </div>
@@ -434,7 +470,7 @@ export default function AgencyCommanderPage() {
                         <div className="relative aspect-[16/9] w-full rounded-2xl overflow-hidden bg-slate-950 border border-slate-800 shadow-inner">
                           <SafeImage
                             src={lead.heroImage || lead.photoUrl}
-                            fallbackSrc={getHeroFallback("artisanal-cafe")}
+                            fallbackSrc={getSmartVenuePhotos(lead.name)[0]?.url || getHeroFallback("artisanal-cafe")}
                             theme="artisanal-cafe"
                             alt={lead.name}
                             className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
@@ -510,7 +546,7 @@ export default function AgencyCommanderPage() {
                       {/* Action Buttons Row */}
                       <div className="space-y-2 pt-4 border-t border-slate-800">
                         <a
-                          href={lead.demoUrl}
+                          href={getDemoUrlWithKey(lead.demoUrl)}
                           target="_blank"
                           rel="noreferrer"
                           className="w-full py-2.5 bg-amber-400 hover:bg-amber-300 text-slate-950 font-black text-xs uppercase tracking-wider rounded-xl transition flex items-center justify-center gap-1.5 shadow-md active:scale-95"
