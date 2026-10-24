@@ -104,6 +104,41 @@ body {
   }
 }
 
+@keyframes aurora-morph {
+  0%, 100% {
+    transform: translate(0px, 0px) scale(1) rotate(0deg);
+  }
+  33% {
+    transform: translate(35px, -45px) scale(1.1) rotate(6deg);
+  }
+  66% {
+    transform: translate(-30px, 30px) scale(0.94) rotate(-6deg);
+  }
+}
+
+@keyframes aurora-morph-reverse {
+  0%, 100% {
+    transform: translate(0px, 0px) scale(1) rotate(0deg);
+  }
+  33% {
+    transform: translate(-40px, 35px) scale(0.95) rotate(-5deg);
+  }
+  66% {
+    transform: translate(30px, -25px) scale(1.08) rotate(7deg);
+  }
+}
+
+@keyframes beam-glow {
+  0%, 100% {
+    opacity: 0.3;
+    transform: scaleX(1);
+  }
+  50% {
+    opacity: 0.65;
+    transform: scaleX(1.2);
+  }
+}
+
 /* Utility animation classes */
 .animate-float-slow {
   animation: float-slow 5s ease-in-out infinite;
@@ -131,6 +166,18 @@ body {
 
 .animate-spin-slow {
   animation: spin-slow 20s linear infinite;
+}
+
+.animate-aurora {
+  animation: aurora-morph 22s ease-in-out infinite;
+}
+
+.animate-aurora-reverse {
+  animation: aurora-morph-reverse 26s ease-in-out infinite;
+}
+
+.animate-beam {
+  animation: beam-glow 7s ease-in-out infinite;
 }
 
 .shimmer-badge {

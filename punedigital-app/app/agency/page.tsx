@@ -8,6 +8,8 @@ import {
   TrendingUp, Send, CheckCircle2, AlertCircle, ArrowRight
 } from "lucide-react";
 import { CustomCursor } from "@/components/custom-cursor";
+import { AnimatedBackground } from "@/components/animated-background";
+import { AestheticFX } from "@/components/aesthetic-fx";
 import { 
   FadeIn, 
   StaggerChildren, 
@@ -141,7 +143,13 @@ export default function AgencyCommanderPage() {
   };
 
   return (
-    <div className="min-h-screen bg-slate-950 text-slate-100 font-sans selection:bg-amber-500 selection:text-slate-950">
+    <div className="min-h-screen bg-slate-950 text-slate-100 font-sans selection:bg-amber-500 selection:text-slate-950 relative overflow-hidden">
+      {/* Drifting Aurora Orbs & Mesh Background */}
+      <AnimatedBackground enabled={true} theme="resto-bar" />
+
+      {/* Ambient Aesthetic Sparkles & Floating Doodles */}
+      <AestheticFX enabled={true} theme="resto-bar" />
+
       <CustomCursor enabled={true} theme="resto-bar" />
 
       {/* Header */}
