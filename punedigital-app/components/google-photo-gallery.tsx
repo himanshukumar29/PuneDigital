@@ -127,8 +127,8 @@ export function GooglePhotoGallery({
         <div className="flex flex-col md:flex-row items-start md:items-end justify-between mb-10 gap-6">
           <div className="space-y-3 max-w-2xl">
             <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-amber-500/10 border border-amber-500/20 text-amber-500 text-xs font-black uppercase tracking-wider">
-              <Camera className="w-3.5 h-3.5" />
-              <span>Google Maps Verified Stream</span>
+              <Sparkles className="w-3.5 h-3.5 text-amber-500" />
+              <span>Curated Visual Gallery</span>
               {animationsEnabled && <span className="animate-pulse">✨</span>}
             </div>
             
@@ -137,7 +137,7 @@ export function GooglePhotoGallery({
             </h2>
             
             <p className="text-xs sm:text-sm text-stone-500 dark:text-stone-400 leading-relaxed">
-              High-resolution snapshots uploaded by <b>{restaurantName}</b> and authentic Pune community patrons to Google Maps.
+              A sensory glimpse into the artisanal craft, wholesome dishes, and dining experience at <b>{restaurantName}</b>.
             </p>
           </div>
 
@@ -214,9 +214,9 @@ export function GooglePhotoGallery({
 
                 {/* Top Bar Badges */}
                 <div className="absolute top-3 left-3 right-3 flex items-center justify-between pointer-events-none z-10">
-                  <span className="bg-black/60 backdrop-blur-md text-[10px] text-amber-300 font-bold px-2.5 py-1 rounded-full border border-amber-500/30 flex items-center gap-1 shadow-sm">
-                    <CheckCircle2 className="w-3 h-3 text-emerald-400" />
-                    <span>Google Maps Upload</span>
+                  <span className="bg-black/60 backdrop-blur-md text-[10px] text-amber-300 font-bold px-2.5 py-1 rounded-full border border-white/15 flex items-center gap-1 shadow-sm">
+                    <Sparkles className="w-3 h-3 text-amber-400" />
+                    <span>{photo.category || "Signature Special"}</span>
                   </span>
 
                   {/* Heart like button */}
@@ -304,13 +304,13 @@ export function GooglePhotoGallery({
               <div className="w-full p-4 bg-stone-950/90 border-t border-white/10 flex items-center justify-between text-xs text-white">
                 <div className="space-y-0.5">
                   <span className="text-[10px] font-black uppercase tracking-wider text-amber-400">
-                    {filteredPhotos[activePhotoIndex].category} • Verified Google Maps Photo
+                    {filteredPhotos[activePhotoIndex].category} • {restaurantName}
                   </span>
                   <p className="font-bold text-sm">
                     {filteredPhotos[activePhotoIndex].caption || restaurantName}
                   </p>
                   <p className="text-[11px] text-stone-400">
-                    Uploaded by {filteredPhotos[activePhotoIndex].author}
+                    Captured by {filteredPhotos[activePhotoIndex].author}
                   </p>
                 </div>
 
