@@ -69,7 +69,7 @@ async function runLocalScan() {
         const demoUrl = `http://localhost:3000/s/${slug}`;
         const phone = p.nationalPhoneNumber || "N/A";
 
-        const whatsappPitch = `Hi ${name} team! 👋 Saw your stellar ${rating}⭐ rating with ${reviews}+ reviews in ${area}. We built a custom digital prototype with your authentic photos & reviews: ${demoUrl} . Plans start at ₹2,999 (Starter) and ₹4,999 / year (Managed with 1 year hosting & updates). Reply YES to claim!`;
+        const whatsappPitch = `Hi ${name} team! 👋 Saw your stellar ${rating}⭐ rating with ${reviews}+ reviews in ${area}. We built a custom digital prototype with your authentic photos & reviews: ${demoUrl} . Tier 1 (₹2,999 setup + free Vercel deploy) or Tier 2 (₹4,999/yr bespoke custom design + 1 yr hosting & updates). Reply YES to claim!`;
 
         qualified.push({
           name,
@@ -79,7 +79,7 @@ async function runLocalScan() {
           address: p.formattedAddress,
           demoUrl,
           mapsUrl: p.googleMapsUri,
-          plans: "Tier 1: ₹2,999 | Tier 2: ₹4,999 / year",
+          plans: "Tier 1: ₹2,999 (Setup + Vercel) | Tier 2: ₹4,999 / year (Custom Design + Hosting)",
           whatsappPitch
         });
       }
@@ -93,7 +93,7 @@ async function runLocalScan() {
       console.log(`    ⭐ Rating:   ${lead.rating} (${lead.reviews} reviews)`);
       console.log(`    📞 Phone:    ${lead.phone}`);
       console.log(`    📍 Address:  ${lead.address}`);
-      console.log(`    💰 Pricing:  Tier 1: ₹2,999 (Starter) | Tier 2: ₹4,999 / year (Managed)`);
+      console.log(`    💰 Pricing:  Tier 1: ₹2,999 (Setup Support + Free Vercel Deploy) | Tier 2: ₹4,999 / yr (Custom Design + Hosting)`);
       console.log(`    🌐 Live Demo: 👉 ${lead.demoUrl}`);
       console.log(`    💬 WhatsApp Pitch:`);
       console.log(`       "${lead.whatsappPitch}"`);

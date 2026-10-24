@@ -124,7 +124,7 @@ export function OwnerPreviewBar({
               }`}
             >
               <Zap className="w-3 h-3" />
-              <span>Tier 2: Managed (₹4,999/yr)</span>
+              <span>Tier 2: Custom Design & Care (₹4,999/yr)</span>
             </button>
           </div>
         </div>

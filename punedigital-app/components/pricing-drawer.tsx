@@ -1,7 +1,7 @@
 "use client";
 
 import React from "react";
-import { X, Check, Shield, Zap, PhoneCall, MessageSquare } from "lucide-react";
+import { X, Check, Shield, Zap, PhoneCall, MessageSquare, Sparkles } from "lucide-react";
 
 interface PricingDrawerProps {
   isOpen: boolean;
@@ -65,20 +65,24 @@ export function PricingDrawer({
               </div>
               <div>
                 <span className="text-3xl sm:text-4xl font-extrabold text-white">₹{t1.toLocaleString("en-IN")}</span>
-                <span className="text-xs text-slate-400 block mt-1">One-time investment</span>
+                <span className="text-xs text-slate-400 block mt-1">One-time setup investment</span>
               </div>
               <p className="text-slate-300 text-xs leading-relaxed">
-                Basic website and initial domain support to get your restaurant up, running, and verified online.
+                Initial setup support, free Vercel deployment, and custom domain connection to get your restaurant up, running, and discoverable online.
               </p>
 
               <ul className="space-y-2.5 text-xs text-slate-300 pt-2 border-t border-slate-700/60">
                 <li className="flex items-center gap-2">
                   <Check className="w-3.5 h-3.5 text-emerald-400 shrink-0" />
-                  <span>Custom Mobile-First Website</span>
+                  <span>Free Vercel Cloud Deploy (₹0 Hosting Cost)</span>
                 </li>
                 <li className="flex items-center gap-2">
                   <Check className="w-3.5 h-3.5 text-emerald-400 shrink-0" />
-                  <span>Initial Domain Setup & Support</span>
+                  <span>Initial Setup & Launch Support Available</span>
+                </li>
+                <li className="flex items-center gap-2">
+                  <Check className="w-3.5 h-3.5 text-emerald-400 shrink-0" />
+                  <span>Custom Domain Support (Domain as per charge)</span>
                 </li>
                 <li className="flex items-center gap-2">
                   <Check className="w-3.5 h-3.5 text-emerald-400 shrink-0" />
@@ -118,16 +122,20 @@ export function PricingDrawer({
               <div>
                 <span className="text-3xl sm:text-4xl font-extrabold text-amber-400">₹{t2.toLocaleString("en-IN")}</span>
                 <span className="text-xs text-amber-200/90 ml-1.5 font-bold">/ 1 Year Full Care</span>
-                <span className="text-xs text-slate-300 block mt-1">Website + 1 Year Cloud Hosting + Free Changes</span>
+                <span className="text-xs text-slate-300 block mt-1">Custom Design + 1 Year Hosting + Free Changes</span>
               </div>
               <p className="text-slate-300 text-xs leading-relaxed">
-                Full peace of mind for 1 full year: high-speed cloud hosting, ongoing maintenance, free menu/price changes & domain serving handled by our agency.
+                Full peace of mind for 1 full year: bespoke custom design tailored to your vibe, high-speed managed cloud hosting, ongoing maintenance, and free menu/price changes.
               </p>
 
               <ul className="space-y-2.5 text-xs text-slate-200 pt-2 border-t border-slate-700/60">
                 <li className="flex items-center gap-2 font-bold text-amber-300">
                   <Check className="w-3.5 h-3.5 text-amber-400 shrink-0" />
                   <span>Everything in Tier 1 Included</span>
+                </li>
+                <li className="flex items-center gap-2 font-bold text-amber-300">
+                  <Sparkles className="w-3.5 h-3.5 text-amber-400 shrink-0" />
+                  <span>Bespoke Custom Brand Design & Theme Styling</span>
                 </li>
                 <li className="flex items-center gap-2">
                   <Check className="w-3.5 h-3.5 text-amber-400 shrink-0" />

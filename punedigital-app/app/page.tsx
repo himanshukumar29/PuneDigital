@@ -270,17 +270,21 @@ export default function AgencyHomePage() {
               </div>
               <h3 className="text-xl font-bold text-white">Tier 1: Starter Presence</h3>
               <p className="text-xs text-slate-400 leading-relaxed">
-                Basic website and initial domain support to get your restaurant up, verified, and discoverable.
+                Initial setup support, free Vercel deployment, and custom domain connection to get your restaurant up, verified, and discoverable online.
               </p>
               
               <ul className="text-xs text-slate-300 space-y-2.5 pt-2 border-t border-slate-800">
                 <li className="flex items-center gap-2">
                   <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400 shrink-0" />
-                  <span>Custom Mobile-First Website</span>
+                  <span>Free Vercel Cloud Deploy (₹0 Hosting Cost)</span>
                 </li>
                 <li className="flex items-center gap-2">
                   <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400 shrink-0" />
-                  <span>Initial Domain Setup & Support</span>
+                  <span>Initial Setup & Launch Support Available</span>
+                </li>
+                <li className="flex items-center gap-2">
+                  <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400 shrink-0" />
+                  <span>Custom Domain Support (Domain as per charge)</span>
                 </li>
                 <li className="flex items-center gap-2">
                   <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400 shrink-0" />
@@ -292,7 +296,7 @@ export default function AgencyHomePage() {
                 </li>
                 <li className="flex items-center gap-2">
                   <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400 shrink-0" />
-                  <span>Fast 48-Hour Handover</span>
+                  <span>Fast 48-Hour Handover & QR Menu</span>
                 </li>
               </ul>
             </div>
@@ -317,13 +321,17 @@ export default function AgencyHomePage() {
               </div>
               <h3 className="text-xl font-bold text-white">Tier 2: Managed Care (1 Year)</h3>
               <p className="text-xs text-slate-300 leading-relaxed">
-                Full peace of mind for 1 full year: high-speed cloud hosting, ongoing maintenance, menu/pricing changes handled by our agency & domain serving.
+                Full peace of mind for 1 full year: bespoke custom brand design tailored to your vibe, high-speed managed cloud hosting, ongoing maintenance & free menu/price changes.
               </p>
               
               <ul className="text-xs text-slate-200 space-y-2.5 pt-2 border-t border-slate-800">
                 <li className="flex items-center gap-2 font-bold text-amber-300">
                   <CheckCircle2 className="w-3.5 h-3.5 text-amber-400 shrink-0" />
                   <span>Everything in Tier 1 Included</span>
+                </li>
+                <li className="flex items-center gap-2 font-bold text-amber-300">
+                  <CheckCircle2 className="w-3.5 h-3.5 text-amber-400 shrink-0" />
+                  <span>Bespoke Custom Brand Design & Theme Styling</span>
                 </li>
                 <li className="flex items-center gap-2">
                   <CheckCircle2 className="w-3.5 h-3.5 text-amber-400 shrink-0" />
@@ -353,7 +361,7 @@ export default function AgencyHomePage() {
                 <span className="text-3xl font-serif font-black text-amber-400">₹4,999</span>
                 <span className="text-xs text-amber-200/80 font-bold">/ 1 Year</span>
               </div>
-              <span className="text-xs text-slate-400 block mt-0.5">All-inclusive 1 full year: website + hosting + changes</span>
+              <span className="text-xs text-slate-400 block mt-0.5">All-inclusive 1 full year: custom design + hosting + changes</span>
             </div>
           </div>
         </div>

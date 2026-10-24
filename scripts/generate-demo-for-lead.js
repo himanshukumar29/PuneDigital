@@ -80,8 +80,8 @@ async function generateDemo() {
   console.log(`\n======================================================`);
   console.log(`🎉 Demo Ready!`);
   console.log(`💰 Pricing Plans:`);
-  console.log(`   - Tier 1: ₹2,999 (Starter Presence)`);
-  console.log(`   - Tier 2: ₹4,999 / year (1 Year Managed Care + Hosting + Changes)`);
+  console.log(`   - Tier 1: ₹2,999 (Setup Support + Free Vercel Deploy + Domain as per charge)`);
+  console.log(`   - Tier 2: ₹4,999 / year (Bespoke Custom Design + 1 Year Hosting + Free Changes)`);
   console.log(`🚀 Click to Open in Browser:`);
   console.log(`   ${demoUrl}`);
   console.log(`======================================================\n`);
