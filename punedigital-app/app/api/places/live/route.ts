@@ -106,10 +106,10 @@ export async function GET(request: NextRequest) {
     // Extract area keyword for better photo search
     const area = query.includes("Baner") ? "Baner" : query.includes("Koregaon") ? "Koregaon Park" : "Pune";
 
-    // 1. First check if Google Places API (New) returned photo references
+    // 1. First check if Google Places API (New) returned photo references and a valid API key is available
     let photosList: any[] = [];
 
-    if (Array.isArray(placeData?.photos) && placeData.photos.length > 0) {
+    if (apiKey && apiKey.length > 10 && Array.isArray(placeData?.photos) && placeData.photos.length > 0) {
       photosList = placeData.photos
         .slice(0, 8)
         .map((p: any) => {

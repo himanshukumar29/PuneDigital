@@ -1,8 +1,12 @@
 "use client";
 
-import React from "react";
-import { X, Check, Shield, Zap, PhoneCall, MessageSquare, Sparkles } from "lucide-react";
+import React, { useState } from "react";
+import { 
+  X, Check, Zap, PhoneCall, MessageSquare, Sparkles, 
+  Mail, Copy, CheckCircle2, Phone, ShieldCheck, ArrowRight
+} from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
+import { AGENCY_CONFIG, getClaimWhatsAppUrl, getClaimEmailUrl } from "@/lib/agency-config";
 
 interface PricingDrawerProps {
   isOpen: boolean;
@@ -21,9 +25,18 @@ export function PricingDrawer({
   onClose,
   restaurantName,
   pricing = {},
+  phone: restaurantPhone,
 }: PricingDrawerProps) {
   const t1 = pricing.tier1_price || 2999;
   const t2 = pricing.tier2_price || 4999;
+  const [copied, setCopied] = useState(false);
+
+  const copyContactDetails = () => {
+    const details = `PuneDigital Agency Contact:\nPhone: ${AGENCY_CONFIG.phone}\nWhatsApp: ${AGENCY_CONFIG.whatsapp}\nEmail: ${AGENCY_CONFIG.email}\nClaiming: ${restaurantName}`;
+    navigator.clipboard.writeText(details);
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2500);
+  };
 
   return (
     <AnimatePresence>
@@ -33,7 +46,7 @@ export function PricingDrawer({
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
           onClick={onClose}
-          className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/80 backdrop-blur-md"
+          className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/85 backdrop-blur-md"
         >
           <motion.div
             initial={{ opacity: 0, scale: 0.95, y: 20 }}
@@ -41,51 +54,53 @@ export function PricingDrawer({
             exit={{ opacity: 0, scale: 0.95, y: 20 }}
             transition={{ type: "spring", stiffness: 350, damping: 25 }}
             onClick={(e) => e.stopPropagation()}
-            className="bg-slate-900 border border-slate-800 text-slate-100 rounded-3xl max-w-3xl w-full max-h-[90vh] overflow-y-auto shadow-2xl p-6 sm:p-8 relative"
+            className="bg-slate-900 border border-slate-800 text-slate-100 rounded-3xl max-w-3xl w-full max-h-[92vh] overflow-y-auto shadow-2xl p-6 sm:p-8 relative"
           >
             {/* Close Button */}
             <button
               onClick={onClose}
-              className="absolute top-5 right-5 text-slate-400 hover:text-white p-2 rounded-full hover:bg-slate-800 transition active:scale-95"
+              className="absolute top-5 right-5 text-slate-400 hover:text-white p-2 rounded-full hover:bg-slate-800 transition active:scale-95 z-10"
+              aria-label="Close modal"
             >
               <X className="w-5 h-5" />
             </button>
 
             {/* Header */}
-            <div className="text-center max-w-xl mx-auto mb-8">
-              <div className="inline-block px-3 py-1 rounded-full bg-amber-500/20 text-amber-400 text-xs font-semibold mb-3">
-                Official Prototype Claim Offer • {restaurantName}
+            <div className="text-center max-w-xl mx-auto space-y-2 mb-8">
+              <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-amber-500/10 border border-amber-500/20 text-amber-300 text-xs font-bold">
+                <Sparkles className="w-3.5 h-3.5 text-amber-400" />
+                <span>Exclusive Prototype Claim Plan</span>
               </div>
-              <h2 className="text-2xl sm:text-3xl font-extrabold text-white">
-                Simple & Lucrative Website Plans
+              <h2 className="text-2xl sm:text-3xl font-serif font-black tracking-tight text-white">
+                Claim {restaurantName}&apos;s Official Website
               </h2>
-              <p className="text-slate-400 text-xs sm:text-sm mt-2">
-                No technical skills or headache needed. We handle your restaurant&apos;s digital presence in 48 hours.
+              <p className="text-xs sm:text-sm text-slate-300">
+                Transparent pricing tailored for independent Pune dining brands. Zero commissions, full ownership.
               </p>
-
-              <div className="mt-3 inline-block bg-gradient-to-r from-amber-500/10 via-amber-500/20 to-amber-500/10 border border-amber-500/30 text-amber-300 text-xs px-4 py-1.5 rounded-full font-medium">
+              <div className="inline-block text-[11px] font-bold text-amber-400 bg-amber-500/10 border border-amber-500/30 px-3 py-1 rounded-full mt-1">
                 🎁 Pune Launch Special: Free .in Domain Included
               </div>
             </div>
 
-            {/* 2-Tier Pricing Cards Grid */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-2xl mx-auto">
+            {/* 2-Tier Pricing Cards */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               {/* Tier 1: Starter Presence */}
-              <div className="bg-slate-800/60 border border-slate-700/60 rounded-2xl p-6 flex flex-col justify-between hover:border-slate-500 transition">
+              <div className="bg-slate-950/60 border border-slate-800 rounded-2xl p-6 flex flex-col justify-between hover:border-slate-700 transition">
                 <div className="space-y-4">
                   <div className="flex items-center gap-2 text-slate-300 text-sm font-semibold">
-                    <Shield className="w-5 h-5 text-amber-400" />
+                    <ShieldCheck className="w-5 h-5 text-slate-400" />
                     <span>Tier 1: Starter Presence</span>
                   </div>
                   <div>
                     <span className="text-3xl sm:text-4xl font-extrabold text-white">₹{t1.toLocaleString("en-IN")}</span>
-                    <span className="text-xs text-slate-400 block mt-1">One-time setup investment</span>
+                    <span className="text-xs text-slate-400 ml-1.5 font-bold">One-time setup</span>
+                    <span className="text-xs text-slate-400 block mt-1">₹0 Hosting Forever (Free Vercel Cloud)</span>
                   </div>
                   <p className="text-slate-300 text-xs leading-relaxed">
-                    Initial setup support, free Vercel deployment, and custom domain connection to get your restaurant up, running, and discoverable online.
+                    Ideal for restaurants with a tight budget: you get a modern, blazing-fast official website deployed on free Vercel cloud hosting with zero ongoing maintenance fees.
                   </p>
 
-                  <ul className="space-y-2.5 text-xs text-slate-300 pt-2 border-t border-slate-700/60">
+                  <ul className="space-y-2.5 text-xs text-slate-300 pt-2 border-t border-slate-800">
                     <li className="flex items-center gap-2">
                       <Check className="w-3.5 h-3.5 text-emerald-400 shrink-0" />
                       <span>Free Vercel Cloud Deploy (₹0 Hosting Cost)</span>
@@ -108,19 +123,29 @@ export function PricingDrawer({
                     </li>
                     <li className="flex items-center gap-2">
                       <Check className="w-3.5 h-3.5 text-emerald-400 shrink-0" />
-                      <span>Click-to-Call & Direct WhatsApp Link</span>
+                      <span>Fast 48-Hour Handover & Launch</span>
                     </li>
                   </ul>
                 </div>
 
-                <a
-                  href={`https://wa.me/919999999999?text=Hi,%20I%20want%20to%20claim%20Tier%201%20(Rs%202,999)%20for%20${encodeURIComponent(restaurantName)}`}
-                  target="_blank"
-                  rel="noreferrer"
-                  className="mt-6 w-full text-center py-3 rounded-xl bg-slate-700 hover:bg-slate-600 text-white font-bold text-xs uppercase tracking-wider transition active:scale-95"
-                >
-                  Claim Tier 1 (₹2,999)
-                </a>
+                <div className="mt-6 space-y-2">
+                  <a
+                    href={getClaimWhatsAppUrl(restaurantName, 1, t1)}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="w-full text-center py-3 rounded-xl bg-slate-800 hover:bg-slate-700 text-white font-bold text-xs uppercase tracking-wider transition flex items-center justify-center gap-2 active:scale-95"
+                  >
+                    <MessageSquare className="w-3.5 h-3.5 text-emerald-400" />
+                    <span>Claim Tier 1 via WhatsApp (₹{t1.toLocaleString("en-IN")})</span>
+                  </a>
+                  <a
+                    href={getClaimEmailUrl(restaurantName, 1, t1, restaurantPhone)}
+                    className="w-full text-center py-2 rounded-xl bg-slate-950 hover:bg-slate-800 border border-slate-800 text-slate-400 hover:text-slate-200 font-semibold text-[11px] transition flex items-center justify-center gap-1.5"
+                  >
+                    <Mail className="w-3 h-3" />
+                    <span>Claim via Email Draft</span>
+                  </a>
+                </div>
               </div>
 
               {/* Tier 2: Managed Care (Featured) */}
@@ -170,37 +195,100 @@ export function PricingDrawer({
                   </ul>
                 </div>
 
-                <a
-                  href={`https://wa.me/919999999999?text=Hi,%20I%20want%20to%20claim%20Tier%202%20(Rs%204,999/yr)%20for%20${encodeURIComponent(restaurantName)}`}
-                  target="_blank"
-                  rel="noreferrer"
-                  className="mt-6 w-full text-center py-3 rounded-xl bg-amber-500 hover:bg-amber-400 text-slate-950 font-black text-xs uppercase tracking-wider transition shadow-lg shadow-amber-500/20 active:scale-95"
-                >
-                  Claim Tier 2 (₹4,999 / Year)
-                </a>
+                <div className="mt-6 space-y-2">
+                  <a
+                    href={getClaimWhatsAppUrl(restaurantName, 2, t2)}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="w-full text-center py-3 rounded-xl bg-amber-500 hover:bg-amber-400 text-slate-950 font-black text-xs uppercase tracking-wider transition shadow-lg shadow-amber-500/20 active:scale-95 flex items-center justify-center gap-2"
+                  >
+                    <MessageSquare className="w-3.5 h-3.5" />
+                    <span>Claim Tier 2 via WhatsApp (₹{t2.toLocaleString("en-IN")}/yr)</span>
+                  </a>
+                  <a
+                    href={getClaimEmailUrl(restaurantName, 2, t2, restaurantPhone)}
+                    className="w-full text-center py-2 rounded-xl bg-slate-950/70 hover:bg-slate-900 border border-amber-500/30 text-amber-300 hover:text-amber-200 font-semibold text-[11px] transition flex items-center justify-center gap-1.5"
+                  >
+                    <Mail className="w-3 h-3 text-amber-400" />
+                    <span>Claim via Email Draft</span>
+                  </a>
+                </div>
               </div>
             </div>
 
-            {/* Footer contact */}
-            <div className="mt-8 pt-6 border-t border-slate-800 flex flex-col sm:flex-row items-center justify-between text-xs text-slate-400 gap-3">
-              <span>Need custom changes or direct onboarding in Pune?</span>
-              <div className="flex items-center gap-4">
-                <a
-                  href="https://wa.me/919999999999"
-                  target="_blank"
-                  rel="noreferrer"
-                  className="flex items-center gap-1.5 text-emerald-400 hover:underline font-bold"
-                >
-                  <MessageSquare className="w-4 h-4" />
-                  <span>WhatsApp PuneDigital</span>
-                </a>
-                <a
-                  href="tel:+919999999999"
-                  className="flex items-center gap-1.5 text-amber-400 hover:underline font-bold"
-                >
-                  <PhoneCall className="w-4 h-4" />
-                  <span>Call Us</span>
-                </a>
+            {/* Direct Owner Contact & Concierge Hub */}
+            <div className="mt-8 pt-6 border-t border-slate-800 bg-slate-950/40 rounded-2xl p-4 sm:p-5">
+              <div className="flex flex-col md:flex-row items-center justify-between gap-4">
+                <div className="space-y-1 text-center md:text-left">
+                  <span className="text-[10px] font-black uppercase tracking-wider text-amber-400 block">
+                    Direct Contact with Agency Owner
+                  </span>
+                  <h4 className="text-sm font-bold text-white">
+                    Need Custom Additions or Immediate Onboarding in Pune?
+                  </h4>
+                  <p className="text-xs text-slate-400">
+                    Reach our lead tech team directly via WhatsApp, Phone Call, or Official Email.
+                  </p>
+                </div>
+
+                <div className="flex flex-wrap items-center justify-center gap-2 sm:gap-3">
+                  <a
+                    href={`https://wa.me/${AGENCY_CONFIG.whatsapp}?text=${encodeURIComponent(`Hi! I am the owner of ${restaurantName} and want to discuss claiming our official website.`)}`}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold transition shadow-sm active:scale-95"
+                  >
+                    <MessageSquare className="w-3.5 h-3.5" />
+                    <span>WhatsApp</span>
+                  </a>
+
+                  <a
+                    href={`tel:${AGENCY_CONFIG.phone}`}
+                    className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-amber-500 hover:bg-amber-400 text-slate-950 text-xs font-black transition shadow-sm active:scale-95"
+                  >
+                    <Phone className="w-3.5 h-3.5" />
+                    <span>Call Mobile</span>
+                  </a>
+
+                  <a
+                    href={`mailto:${AGENCY_CONFIG.email}?subject=${encodeURIComponent(`Website Claim Inquiry: ${restaurantName}`)}&body=${encodeURIComponent(`Hi PuneDigital Team,\n\nI want to discuss launching the website for ${restaurantName}.\n\nMy Contact Number: \nBest time to call: `)}`}
+                    className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-bold transition border border-slate-700 active:scale-95"
+                  >
+                    <Mail className="w-3.5 h-3.5" />
+                    <span>Email Us</span>
+                  </a>
+
+                  <button
+                    onClick={copyContactDetails}
+                    className="inline-flex items-center gap-1.5 px-3 py-2 rounded-xl bg-slate-900 hover:bg-slate-800 text-slate-400 hover:text-slate-200 text-xs font-medium border border-slate-800 transition active:scale-95"
+                    title="Copy Agency Contact Information"
+                  >
+                    {copied ? (
+                      <>
+                        <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400" />
+                        <span className="text-emerald-400 font-bold">Copied!</span>
+                      </>
+                    ) : (
+                      <>
+                        <Copy className="w-3.5 h-3.5" />
+                        <span>Copy Info</span>
+                      </>
+                    )}
+                  </button>
+                </div>
+              </div>
+
+              {/* Contact Information Display Bar */}
+              <div className="mt-4 pt-3 border-t border-slate-800/80 flex flex-wrap items-center justify-between text-[11px] text-slate-400 gap-2">
+                <span className="font-mono text-slate-300">
+                  📞 Mobile: <b>{AGENCY_CONFIG.phone}</b>
+                </span>
+                <span className="font-mono text-slate-300">
+                  ✉️ Email: <b>{AGENCY_CONFIG.email}</b>
+                </span>
+                <span className="text-slate-400">
+                  📍 {AGENCY_CONFIG.city}
+                </span>
               </div>
             </div>
           </motion.div>

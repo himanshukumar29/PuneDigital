@@ -18,10 +18,19 @@ export function SafeImage({
 }: SafeImageProps) {
   const defaultFallback = fallbackSrc || getHeroFallback(theme);
 
+  const extractUrl = (val: any): string => {
+    if (!val) return "";
+    if (typeof val === "string") return val;
+    if (typeof val === "object" && typeof val.url === "string") return val.url;
+    return "";
+  };
+
+  const rawUrl = extractUrl(src);
+
   // Initial check: if src is missing or from known hotlink-blocking hosts, use fallback immediately
-  const initialSrc = (!src || isBlockedOrUnstableUrl(typeof src === "string" ? src : ""))
+  const initialSrc = (!rawUrl || isBlockedOrUnstableUrl(rawUrl))
     ? defaultFallback
-    : (src as string);
+    : rawUrl;
 
   const [currentSrc, setCurrentSrc] = useState<string>(initialSrc);
   const [hasError, setHasError] = useState(false);
@@ -29,11 +38,12 @@ export function SafeImage({
 
   // Sync if prop changes
   useEffect(() => {
-    if (!src || isBlockedOrUnstableUrl(typeof src === "string" ? src : "")) {
+    const freshUrl = extractUrl(src);
+    if (!freshUrl || isBlockedOrUnstableUrl(freshUrl)) {
       setCurrentSrc(defaultFallback);
       setHasError(false);
     } else {
-      setCurrentSrc(src as string);
+      setCurrentSrc(freshUrl);
       setHasError(false);
     }
   }, [src, defaultFallback]);

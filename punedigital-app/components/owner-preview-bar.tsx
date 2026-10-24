@@ -1,10 +1,13 @@
 "use client";
 
-import React from "react";
-import { Sparkles, Clock, ShieldCheck, Calendar, ArrowRight, Palette, Wand2, Zap } from "lucide-react";
+import React, { useState } from "react";
+import { 
+  Sparkles, Clock, ShieldCheck, ArrowRight, Palette, 
+  Wand2, Zap, Share2, Check, Phone, Mail
+} from "lucide-react";
 import { ArchetypeId } from "@/lib/theme-map";
 import { MagneticButton } from "@/components/motion";
-import { motion } from "framer-motion";
+import { AGENCY_CONFIG } from "@/lib/agency-config";
 
 interface OwnerPreviewBarProps {
   restaurantName: string;
@@ -29,9 +32,32 @@ export function OwnerPreviewBar({
   onToggleAnimations,
   expiresAt,
 }: OwnerPreviewBarProps) {
+  const [copiedLink, setCopiedLink] = useState(false);
+
   const remainingDays = expiresAt
     ? Math.max(1, Math.ceil((new Date(expiresAt).getTime() - Date.now()) / (1000 * 60 * 60 * 24)))
     : 7;
+
+  const handleShare = async () => {
+    const currentUrl = typeof window !== "undefined" ? window.location.href : "";
+    if (typeof navigator !== "undefined" && navigator.share) {
+      try {
+        await navigator.share({
+          title: `${restaurantName} Official Website Prototype`,
+          text: `Check out the new official digital website prototype created for ${restaurantName} in Pune:`,
+          url: currentUrl,
+        });
+        return;
+      } catch (e) {
+        // Fallback to clipboard
+      }
+    }
+    if (typeof navigator !== "undefined" && navigator.clipboard) {
+      navigator.clipboard.writeText(currentUrl);
+      setCopiedLink(true);
+      setTimeout(() => setCopiedLink(false), 2500);
+    }
+  };
 
   return (
     <div className="sticky top-0 z-50 w-full bg-slate-950/95 backdrop-blur-md text-white border-b border-slate-800 shadow-2xl px-4 py-2 font-sans">
@@ -131,16 +157,42 @@ export function OwnerPreviewBar({
           </div>
         </div>
 
-        {/* Right: CTA */}
-        <MagneticButton strength={0.25} as="div">
+        {/* Right: Share Link & Claim CTA */}
+        <div className="flex items-center gap-2">
+          {/* Share / Copy Link Button */}
           <button
-            onClick={onOpenPricing}
-            className="flex items-center gap-2 bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-400 hover:to-amber-500 text-slate-950 font-black px-4 py-1.5 rounded-xl text-xs transition-all shadow-md active:scale-95"
+            onClick={handleShare}
+            className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold transition border active:scale-95 ${
+              copiedLink
+                ? "bg-emerald-950 text-emerald-300 border-emerald-600 shadow-sm"
+                : "bg-slate-900 hover:bg-slate-800 text-slate-300 border-slate-700"
+            }`}
+            title="Copy or share this demo link"
           >
-            <span>Claim Site (₹2,999 / ₹4,999)</span>
-            <ArrowRight className="w-3.5 h-3.5" />
+            {copiedLink ? (
+              <>
+                <Check className="w-3.5 h-3.5 text-emerald-400" />
+                <span className="text-emerald-400">Link Copied!</span>
+              </>
+            ) : (
+              <>
+                <Share2 className="w-3.5 h-3.5 text-amber-400" />
+                <span>Share Link</span>
+              </>
+            )}
           </button>
-        </MagneticButton>
+
+          {/* Claim Site CTA */}
+          <MagneticButton strength={0.25} as="div">
+            <button
+              onClick={onOpenPricing}
+              className="flex items-center gap-2 bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-400 hover:to-amber-500 text-slate-950 font-black px-4 py-1.5 rounded-xl text-xs transition-all shadow-md active:scale-95"
+            >
+              <span>Claim Site (₹2,999 / ₹4,999)</span>
+              <ArrowRight className="w-3.5 h-3.5" />
+            </button>
+          </MagneticButton>
+        </div>
       </div>
     </div>
   );

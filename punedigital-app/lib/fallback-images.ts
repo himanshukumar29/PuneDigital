@@ -266,6 +266,9 @@ export function getHeroFallback(theme: string = "artisanal-cafe"): string {
 export function isBlockedOrUnstableUrl(url: string | null | undefined): boolean {
   if (!url || typeof url !== "string") return true;
   const lower = url.toLowerCase();
+  if (lower.includes("places.googleapis.com") && (lower.endsWith("key=") || lower.includes("key=undefined") || lower.includes("key=your_") || lower.includes("key=&") || !lower.includes("key="))) {
+    return true;
+  }
   return (
     lower.includes("lookaside.instagram.com") ||
     lower.includes("instagram.com") ||
