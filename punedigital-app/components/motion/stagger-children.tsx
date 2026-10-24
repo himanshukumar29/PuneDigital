@@ -9,18 +9,18 @@ interface StaggerChildrenProps {
   once?: boolean;
 }
 
-export function StaggerChildren({ children, staggerDelay = 0.1, className = "", once = true }: StaggerChildrenProps) {
+export function StaggerChildren({ children, staggerDelay = 0.08, className = "", once = true }: StaggerChildrenProps) {
   const ref = useRef(null);
-  const isInView = useInView(ref, { once, margin: "-60px" });
+  const isInView = useInView(ref, { once, margin: "20px" });
 
   return (
     <motion.div
       ref={ref}
       initial="hidden"
-      animate={isInView ? "visible" : "hidden"}
+      animate={isInView ? "visible" : "visible"}
       variants={{
-        hidden: {},
-        visible: { transition: { staggerChildren: staggerDelay } },
+        hidden: { opacity: 0 },
+        visible: { opacity: 1, transition: { staggerChildren: staggerDelay } },
       }}
       className={className}
     >
@@ -34,8 +34,8 @@ export function StaggerItem({ children, className = "" }: { children: ReactNode;
   return (
     <motion.div
       variants={{
-        hidden: { opacity: 0, y: 30, filter: "blur(4px)" },
-        visible: { opacity: 1, y: 0, filter: "blur(0px)", transition: { duration: 0.5, ease: [0.25, 0.4, 0.25, 1] } },
+        hidden: { opacity: 0, y: 20 },
+        visible: { opacity: 1, y: 0, transition: { duration: 0.45, ease: [0.25, 0.4, 0.25, 1] } },
       }}
       className={className}
     >

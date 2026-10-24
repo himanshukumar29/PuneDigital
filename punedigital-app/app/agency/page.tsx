@@ -14,8 +14,6 @@ import { AnimatedBackground } from "@/components/animated-background";
 import { AestheticFX } from "@/components/aesthetic-fx";
 import { 
   FadeIn, 
-  StaggerChildren, 
-  StaggerItem, 
   MagneticButton 
 } from "@/components/motion";
 import { motion, AnimatePresence } from "framer-motion";
@@ -398,34 +396,39 @@ export default function AgencyCommanderPage() {
             </div>
           </div>
 
-          {/* Cards Grid with StaggerChildren */}
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {leads.length === 0 ? (
-              // Empty State with instant demo cards
-              <div className="col-span-full py-16 text-center rounded-3xl border border-dashed border-slate-800 p-8 space-y-4">
-                <div className="w-12 h-12 rounded-2xl bg-slate-900 border border-slate-800 text-amber-400 flex items-center justify-center mx-auto">
-                  <Search className="w-6 h-6" />
-                </div>
-                <div className="space-y-1">
-                  <h3 className="font-bold text-white text-base">No search executed yet</h3>
-                  <p className="text-xs text-slate-500 max-w-md mx-auto">
-                    Click &quot;Scan Baner & Generate Demos&quot; above to fetch live qualified restaurants from Google Maps.
-                  </p>
-                </div>
-                <button
-                  onClick={handleScan}
-                  className="px-5 py-2.5 bg-slate-900 hover:bg-slate-800 border border-slate-700 text-amber-400 text-xs font-bold rounded-xl transition active:scale-95"
-                >
-                  Run Fast Baner Test Scan
-                </button>
+          {/* Cards Grid */}
+          {leads.length === 0 ? (
+            // Empty State with instant demo cards
+            <div className="py-16 text-center rounded-3xl border border-dashed border-slate-800 p-8 space-y-4">
+              <div className="w-12 h-12 rounded-2xl bg-slate-900 border border-slate-800 text-amber-400 flex items-center justify-center mx-auto">
+                <Search className="w-6 h-6" />
               </div>
-            ) : (
-              <StaggerChildren staggerDelay={0.07} className="contents">
-                {leads.map((lead) => (
-                  <StaggerItem key={lead.id}>
-                    <div
-                      className="h-full bg-slate-900/80 border border-slate-800 hover:border-amber-500/50 rounded-3xl p-5 sm:p-6 shadow-xl space-y-4 transition duration-300 flex flex-col justify-between hover:-translate-y-1 group"
-                    >
+              <div className="space-y-1">
+                <h3 className="font-bold text-white text-base">No search executed yet</h3>
+                <p className="text-xs text-slate-500 max-w-md mx-auto">
+                  Click &quot;Scan Baner & Generate Demos&quot; above to fetch live qualified restaurants from Google Maps.
+                </p>
+              </div>
+              <button
+                onClick={handleScan}
+                className="px-5 py-2.5 bg-slate-900 hover:bg-slate-800 border border-slate-700 text-amber-400 text-xs font-bold rounded-xl transition active:scale-95"
+              >
+                Run Fast Baner Test Scan
+              </button>
+            </div>
+          ) : (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {leads.map((lead, idx) => (
+                <motion.div
+                  key={lead.id}
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.35, delay: Math.min(idx * 0.04, 0.4) }}
+                  className="h-full"
+                >
+                  <div
+                    className="h-full bg-slate-900/80 border border-slate-800 hover:border-amber-500/50 rounded-3xl p-5 sm:p-6 shadow-xl space-y-4 transition duration-300 flex flex-col justify-between hover:-translate-y-1 group"
+                  >
                       <div className="space-y-4">
                         {/* Cafe Photography Preview */}
                         <div className="relative aspect-[16/9] w-full rounded-2xl overflow-hidden bg-slate-950 border border-slate-800 shadow-inner">
@@ -535,11 +538,10 @@ export default function AgencyCommanderPage() {
                         </div>
                       </div>
                     </div>
-                  </StaggerItem>
+                  </motion.div>
                 ))}
-              </StaggerChildren>
+              </div>
             )}
-          </div>
         </div>
       </main>
 
