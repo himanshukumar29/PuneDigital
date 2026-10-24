@@ -20,14 +20,6 @@ export function ArtisanalCafeTheme({ config, activeTier, onOpenPricing, animatio
   
   // State
   const [selectedCategory, setSelectedCategory] = useState("All");
-  const [bookingState, setBookingState] = useState({
-    partySize: "2 Guests (Intimate Table)",
-    date: "Today Evening",
-    time: "7:30 PM",
-    seating: "Sunlit Courtyard",
-    notes: "",
-    submitted: false,
-  });
 
   const heroImg = assets?.hero_image || "https://images.unsplash.com/photo-1554118811-1e0d58224f24?auto=format&fit=crop&w=1600&q=80";
 
@@ -56,7 +48,6 @@ export function ArtisanalCafeTheme({ config, activeTier, onOpenPricing, animatio
           <div className="hidden md:flex items-center gap-8 text-xs font-semibold text-[#5c4a3f] uppercase tracking-wider">
             <a href="#story" className="hover:text-[#945219] transition">The Craft</a>
             <a href="#menu" className="hover:text-[#945219] transition">Menu</a>
-            {activeTier >= 2 && <a href="#reservation" className="hover:text-[#945219] transition">Reserve Table</a>}
             <a href="#reviews" className="hover:text-[#945219] transition">Reviews</a>
             <a href="#visit" className="hover:text-[#945219] transition">Visiting Hours</a>
           </div>
@@ -118,23 +109,13 @@ export function ArtisanalCafeTheme({ config, activeTier, onOpenPricing, animatio
                 <span>Explore Artisan Menu</span>
               </a>
 
-              {activeTier >= 2 ? (
-                <a
-                  href="#reservation"
-                  className="bg-[#f0e2d1] hover:bg-[#ebd6c0] text-[#542d0c] border border-[#d6be9f] px-7 py-3.5 rounded-2xl text-xs font-bold uppercase tracking-wider transition flex items-center gap-2"
-                >
-                  <Calendar className="w-4 h-4" />
-                  <span>Reserve Table</span>
-                </a>
-              ) : (
-                <a
-                  href={`tel:${restaurant.phone || "+919876543210"}`}
-                  className="bg-white hover:bg-stone-50 text-[#1c140f] border border-[#e0cbaf] px-7 py-3.5 rounded-2xl text-xs font-bold uppercase tracking-wider transition flex items-center gap-2 shadow-sm"
-                >
-                  <Phone className="w-4 h-4 text-amber-700" />
-                  <span>Call {restaurant.phone}</span>
-                </a>
-              )}
+              <a
+                href={`tel:${restaurant.phone || "+919876543210"}`}
+                className="bg-white hover:bg-stone-50 text-[#1c140f] border border-[#e0cbaf] px-7 py-3.5 rounded-2xl text-xs font-bold uppercase tracking-wider transition flex items-center gap-2 shadow-sm"
+              >
+                <Phone className="w-4 h-4 text-amber-700" />
+                <span>Call {restaurant.phone}</span>
+              </a>
             </div>
           </div>
 
@@ -288,123 +269,6 @@ export function ArtisanalCafeTheme({ config, activeTier, onOpenPricing, animatio
           ))}
         </div>
       </section>
-
-      {/* Tier 2: Interactive Table Reservation Suite */}
-      {activeTier >= 2 && (
-        <section id="reservation" className="py-24 bg-[#ebdccb] border-y border-[#ddcbb7] px-4 font-sans">
-          <div className="max-w-2xl mx-auto bg-white rounded-3xl p-8 sm:p-10 border border-[#d6c2ab] shadow-2xl text-center space-y-6">
-            <div className="w-12 h-12 rounded-2xl bg-[#f8efe4] text-[#7a481c] flex items-center justify-center mx-auto">
-              <Calendar className="w-6 h-6" />
-            </div>
-
-            <div className="space-y-1">
-              <span className="text-[10px] uppercase tracking-widest text-[#7a481c] font-black">
-                VIP Concierge
-              </span>
-              <h3 className="font-serif text-3xl sm:text-4xl text-[#1a120c]">
-                Reserve Your Table at {restaurant.name}
-              </h3>
-              <p className="text-xs text-[#705b4c] max-w-md mx-auto">
-                Direct booking confirmed instantly to your WhatsApp. No wait times.
-              </p>
-            </div>
-
-            {bookingState.submitted ? (
-              <div className="bg-emerald-50 border border-emerald-300 text-emerald-900 p-6 rounded-2xl text-xs space-y-2 text-left">
-                <div className="flex items-center gap-2 font-bold text-emerald-800 text-sm">
-                  <CheckCircle2 className="w-5 h-5 text-emerald-600" />
-                  <span>Table Reservation Simulated!</span>
-                </div>
-                <p className="text-xs leading-relaxed text-emerald-800">
-                  In production, this triggers an automated WhatsApp message to the floor manager at <b>{restaurant.phone}</b> with your party size ({bookingState.partySize}), preferred seating ({bookingState.seating}), and sends the customer an instant calendar invite.
-                </p>
-                <button
-                  onClick={() => setBookingState(prev => ({ ...prev, submitted: false }))}
-                  className="mt-3 text-xs font-bold text-emerald-700 underline"
-                >
-                  Test Another Booking
-                </button>
-              </div>
-            ) : (
-              <form
-                onSubmit={(e) => {
-                  e.preventDefault();
-                  setBookingState(prev => ({ ...prev, submitted: true }));
-                }}
-                className="space-y-4 pt-2 text-left text-xs"
-              >
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                  <div>
-                    <label className="font-bold text-[#453428] block mb-1.5">Party Size</label>
-                    <select
-                      value={bookingState.partySize}
-                      onChange={(e) => setBookingState(prev => ({ ...prev, partySize: e.target.value }))}
-                      className="w-full p-3 rounded-xl border border-[#d6c2ab] bg-stone-50 font-medium"
-                    >
-                      <option>2 Guests (Intimate Table)</option>
-                      <option>4 Guests (Family / Friends)</option>
-                      <option>6 - 8 Guests (Large Group)</option>
-                      <option>Private Workshop / Event (10+)</option>
-                    </select>
-                  </div>
-
-                  <div>
-                    <label className="font-bold text-[#453428] block mb-1.5">Seating Ambience</label>
-                    <select
-                      value={bookingState.seating}
-                      onChange={(e) => setBookingState(prev => ({ ...prev, seating: e.target.value }))}
-                      className="w-full p-3 rounded-xl border border-[#d6c2ab] bg-stone-50 font-medium"
-                    >
-                      <option>Sunlit Courtyard (Popular)</option>
-                      <option>Al Fresco Garden Veranda</option>
-                      <option>Indoor AC Lounge</option>
-                    </select>
-                  </div>
-                </div>
-
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                  <div>
-                    <label className="font-bold text-[#453428] block mb-1.5">Date</label>
-                    <select
-                      value={bookingState.date}
-                      onChange={(e) => setBookingState(prev => ({ ...prev, date: e.target.value }))}
-                      className="w-full p-3 rounded-xl border border-[#d6c2ab] bg-stone-50 font-medium"
-                    >
-                      <option>Today Evening</option>
-                      <option>Tomorrow</option>
-                      <option>This Coming Friday</option>
-                      <option>This Coming Saturday</option>
-                      <option>This Coming Sunday Brunch</option>
-                    </select>
-                  </div>
-
-                  <div>
-                    <label className="font-bold text-[#453428] block mb-1.5">Preferred Time</label>
-                    <select
-                      value={bookingState.time}
-                      onChange={(e) => setBookingState(prev => ({ ...prev, time: e.target.value }))}
-                      className="w-full p-3 rounded-xl border border-[#d6c2ab] bg-stone-50 font-medium"
-                    >
-                      <option>12:30 PM (Lunch)</option>
-                      <option>1:30 PM (Lunch)</option>
-                      <option>5:30 PM (Sunset Coffee)</option>
-                      <option>7:30 PM (Dinner)</option>
-                      <option>8:30 PM (Dinner)</option>
-                    </select>
-                  </div>
-                </div>
-
-                <button
-                  type="submit"
-                  className="w-full py-4 bg-[#1c140f] hover:bg-[#31231a] text-white font-bold rounded-2xl text-xs uppercase tracking-wider transition shadow-xl"
-                >
-                  Confirm Table Booking Preview
-                </button>
-              </form>
-            )}
-          </div>
-        </section>
-      )}
 
       {/* Verified Google Maps Reviews */}
       <section id="reviews" className="py-24 px-4 sm:px-6 lg:px-8 max-w-6xl mx-auto">

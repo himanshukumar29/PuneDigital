@@ -315,9 +315,9 @@ export default function AgencyHomePage() {
               <div className="w-12 h-12 rounded-2xl bg-amber-400 text-slate-950 flex items-center justify-center">
                 <Zap className="w-6 h-6" />
               </div>
-              <h3 className="text-xl font-bold text-white">Tier 2: Managed Care</h3>
+              <h3 className="text-xl font-bold text-white">Tier 2: Managed Care (1 Year)</h3>
               <p className="text-xs text-slate-300 leading-relaxed">
-                Complete website hosting, ongoing maintenance, menu/pricing changes, domain serving & QR menus.
+                Full peace of mind for 1 full year: high-speed cloud hosting, ongoing maintenance, menu/pricing changes handled by our agency & domain serving.
               </p>
               
               <ul className="text-xs text-slate-200 space-y-2.5 pt-2 border-t border-slate-800">
@@ -327,15 +327,15 @@ export default function AgencyHomePage() {
                 </li>
                 <li className="flex items-center gap-2">
                   <CheckCircle2 className="w-3.5 h-3.5 text-amber-400 shrink-0" />
-                  <span>Managed Cloud Website Hosting & SSL</span>
+                  <span>1 Year Managed Cloud Website Hosting & SSL</span>
                 </li>
                 <li className="flex items-center gap-2">
                   <CheckCircle2 className="w-3.5 h-3.5 text-amber-400 shrink-0" />
-                  <span>Domain Serving & Renewal Support</span>
+                  <span>1 Year Domain Serving & Technical Maintenance</span>
                 </li>
                 <li className="flex items-center gap-2">
                   <CheckCircle2 className="w-3.5 h-3.5 text-amber-400 shrink-0" />
-                  <span>Monthly Menu & Price Changes on Demand</span>
+                  <span>Ongoing Menu & Price Changes Handled by Agency</span>
                 </li>
                 <li className="flex items-center gap-2">
                   <CheckCircle2 className="w-3.5 h-3.5 text-amber-400 shrink-0" />
@@ -343,14 +343,17 @@ export default function AgencyHomePage() {
                 </li>
                 <li className="flex items-center gap-2">
                   <CheckCircle2 className="w-3.5 h-3.5 text-amber-400 shrink-0" />
-                  <span>WhatsApp Table Reservation Suite</span>
+                  <span>Dedicated Priority Agency WhatsApp Support</span>
                 </li>
               </ul>
             </div>
 
             <div className="pt-6 border-t border-slate-800">
-              <span className="text-3xl font-serif font-black text-amber-400">₹4,999</span>
-              <span className="text-xs text-slate-400 block mt-0.5">All-inclusive website + hosting + changes</span>
+              <div className="flex items-baseline gap-1.5">
+                <span className="text-3xl font-serif font-black text-amber-400">₹4,999</span>
+                <span className="text-xs text-amber-200/80 font-bold">/ 1 Year</span>
+              </div>
+              <span className="text-xs text-slate-400 block mt-0.5">All-inclusive 1 full year: website + hosting + changes</span>
             </div>
           </div>
         </div>

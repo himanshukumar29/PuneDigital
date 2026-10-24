@@ -1,7 +1,7 @@
 "use client";
 
 import React from "react";
-import { Sparkles, Clock, ShieldCheck, Calendar, ArrowRight, Palette, Wand2 } from "lucide-react";
+import { Sparkles, Clock, ShieldCheck, Calendar, ArrowRight, Palette, Wand2, Zap } from "lucide-react";
 import { ArchetypeId } from "@/lib/theme-map";
 
 interface OwnerPreviewBarProps {
@@ -123,8 +123,8 @@ export function OwnerPreviewBar({
                   : "text-slate-300 hover:text-white"
               }`}
             >
-              <Calendar className="w-3 h-3" />
-              <span>Tier 2: Managed (₹4,999)</span>
+              <Zap className="w-3 h-3" />
+              <span>Tier 2: Managed (₹4,999/yr)</span>
             </button>
           </div>
         </div>

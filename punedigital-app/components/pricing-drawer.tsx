@@ -117,10 +117,11 @@ export function PricingDrawer({
               </div>
               <div>
                 <span className="text-3xl sm:text-4xl font-extrabold text-amber-400">₹{t2.toLocaleString("en-IN")}</span>
-                <span className="text-xs text-slate-300 block mt-1">Website + Hosting + Changes</span>
+                <span className="text-xs text-amber-200/90 ml-1.5 font-bold">/ 1 Year Full Care</span>
+                <span className="text-xs text-slate-300 block mt-1">Website + 1 Year Cloud Hosting + Free Changes</span>
               </div>
               <p className="text-slate-300 text-xs leading-relaxed">
-                Full peace of mind: website hosting, ongoing maintenance, menu/price changes, domain serving & QR menus.
+                Full peace of mind for 1 full year: high-speed cloud hosting, ongoing maintenance, free menu/price changes & domain serving handled by our agency.
               </p>
 
               <ul className="space-y-2.5 text-xs text-slate-200 pt-2 border-t border-slate-700/60">
@@ -130,15 +131,15 @@ export function PricingDrawer({
                 </li>
                 <li className="flex items-center gap-2">
                   <Check className="w-3.5 h-3.5 text-amber-400 shrink-0" />
-                  <span>Managed Cloud Website Hosting & SSL</span>
+                  <span>1 Year Managed Cloud Website Hosting & SSL</span>
                 </li>
                 <li className="flex items-center gap-2">
                   <Check className="w-3.5 h-3.5 text-amber-400 shrink-0" />
-                  <span>Domain Serving & Renewal Support</span>
+                  <span>1 Year Domain Serving & Technical Maintenance</span>
                 </li>
                 <li className="flex items-center gap-2">
                   <Check className="w-3.5 h-3.5 text-amber-400 shrink-0" />
-                  <span>Monthly Menu & Price Changes on Demand</span>
+                  <span>Ongoing Menu & Price Changes Handled by Agency</span>
                 </li>
                 <li className="flex items-center gap-2">
                   <Check className="w-3.5 h-3.5 text-amber-400 shrink-0" />
@@ -146,18 +147,18 @@ export function PricingDrawer({
                 </li>
                 <li className="flex items-center gap-2">
                   <Check className="w-3.5 h-3.5 text-amber-400 shrink-0" />
-                  <span>WhatsApp Table Reservation Suite</span>
+                  <span>Dedicated Priority Agency WhatsApp Support</span>
                 </li>
               </ul>
             </div>
 
             <a
-              href={`https://wa.me/919999999999?text=Hi,%20I%20want%20to%20claim%20Tier%202%20(Rs%204,999)%20for%20${encodeURIComponent(restaurantName)}`}
+              href={`https://wa.me/919999999999?text=Hi,%20I%20want%20to%20claim%20Tier%202%20(Rs%204,999/yr)%20for%20${encodeURIComponent(restaurantName)}`}
               target="_blank"
               rel="noreferrer"
               className="mt-6 w-full text-center py-3 rounded-xl bg-amber-500 hover:bg-amber-400 text-slate-950 font-black text-xs uppercase tracking-wider transition shadow-lg shadow-amber-500/20"
             >
-              Claim Tier 2 (₹4,999)
+              Claim Tier 2 (₹4,999 / Year)
             </a>
           </div>
         </div>

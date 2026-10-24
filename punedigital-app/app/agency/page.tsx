@@ -450,7 +450,7 @@ export default function AgencyCommanderPage() {
                         className="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-xs text-amber-300 font-bold focus:outline-none"
                       >
                         <option value="tier1">Tier 1: Starter Presence (₹2,999 One-time)</option>
-                        <option value="tier2">Tier 2: Managed Care (₹4,999 Website + Hosting + Changes)</option>
+                        <option value="tier2">Tier 2: Managed Care (₹4,999 / 1 Year - Hosting + Maintenance + Changes)</option>
                       </select>
                     </div>
                   </div>

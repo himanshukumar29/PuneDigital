@@ -18,13 +18,6 @@ export function RestoBarTheme({ config, activeTier, onOpenPricing, animationsEna
   const { restaurant, assets, menu, reviews } = config;
   
   const [selectedCategory, setSelectedCategory] = useState("All");
-  const [vipState, setVipState] = useState({
-    loungeArea: "Rooftop Skydeck Terrace",
-    partySize: "Group (4 - 6 Guests)",
-    day: "Friday Night - Sundowner",
-    time: "8:00 PM",
-    submitted: false
-  });
 
   const heroImg = assets?.hero_image || "https://images.unsplash.com/photo-1514933651103-005eec06c04b?auto=format&fit=crop&w=1600&q=80";
 
@@ -49,7 +42,6 @@ export function RestoBarTheme({ config, activeTier, onOpenPricing, animationsEna
           <div className="hidden md:flex items-center gap-8 text-xs font-bold uppercase tracking-widest text-neutral-400">
             <a href="#lineup" className="hover:text-amber-400 transition">Sound & Lineup</a>
             <a href="#mixology" className="hover:text-amber-400 transition">Mixology & Bites</a>
-            {activeTier >= 2 && <a href="#vip" className="hover:text-amber-400 transition">VIP Bottle Service</a>}
             <a href="#reviews" className="hover:text-amber-400 transition">Guest Book</a>
           </div>
 
@@ -112,23 +104,13 @@ export function RestoBarTheme({ config, activeTier, onOpenPricing, animationsEna
               <span>View Mixology & Tapas</span>
             </a>
 
-            {activeTier >= 2 ? (
-              <a
-                href="#vip"
-                className="bg-neutral-900 hover:bg-neutral-800 text-white border border-neutral-700 px-8 py-3.5 rounded-xl text-xs uppercase tracking-wider font-extrabold transition flex items-center gap-2"
-              >
-                <Calendar className="w-4 h-4 text-amber-400" />
-                <span>Reserve VIP Table</span>
-              </a>
-            ) : (
-              <a
-                href={`tel:${restaurant.phone || "+919876543210"}`}
-                className="bg-neutral-900 hover:bg-neutral-800 text-white border border-neutral-700 px-8 py-3.5 rounded-xl text-xs uppercase tracking-wider font-extrabold transition flex items-center gap-2"
-              >
-                <Phone className="w-4 h-4 text-amber-400" />
-                <span>Call Concierge</span>
-              </a>
-            )}
+            <a
+              href={`tel:${restaurant.phone || "+919876543210"}`}
+              className="bg-neutral-900 hover:bg-neutral-800 text-white border border-neutral-700 px-8 py-3.5 rounded-xl text-xs uppercase tracking-wider font-extrabold transition flex items-center gap-2"
+            >
+              <Phone className="w-4 h-4 text-amber-400" />
+              <span>Call Concierge: {restaurant.phone}</span>
+            </a>
           </div>
         </div>
       </section>
@@ -262,7 +244,7 @@ export function RestoBarTheme({ config, activeTier, onOpenPricing, animationsEna
                   href={`tel:${restaurant.phone || "+919876543210"}`}
                   className="text-xs font-bold text-amber-400 hover:underline flex items-center gap-1"
                 >
-                  <span>Reserve for Table</span>
+                  <span>Order by Phone</span>
                   <ArrowUpRight className="w-3.5 h-3.5" />
                 </a>
               </div>
@@ -270,120 +252,6 @@ export function RestoBarTheme({ config, activeTier, onOpenPricing, animationsEna
           ))}
         </div>
       </section>
-
-      {/* Tier 2: VIP Bottle Service & Table Booking */}
-      {activeTier >= 2 && (
-        <section id="vip" className="py-24 bg-[#0a0a0d] border-y border-neutral-900 px-4">
-          <div className="max-w-2xl mx-auto bg-neutral-900 border border-neutral-800 rounded-3xl p-8 sm:p-10 text-center space-y-6 shadow-2xl">
-            <div className="w-12 h-12 rounded-2xl bg-amber-500/10 border border-amber-500/20 text-amber-400 flex items-center justify-center mx-auto">
-              <Flame className="w-6 h-6" />
-            </div>
-
-            <div className="space-y-1">
-              <span className="text-[10px] uppercase font-black tracking-widest text-amber-400">
-                Priority Nightlife Reservation
-              </span>
-              <h3 className="font-serif text-3xl sm:text-4xl font-black text-white">
-                VIP Lounge & Bottle Service
-              </h3>
-              <p className="text-xs text-neutral-400 max-w-md mx-auto">
-                Skip the line at {restaurant.name}. Priority confirmation sent straight to your WhatsApp.
-              </p>
-            </div>
-
-            {vipState.submitted ? (
-              <div className="bg-amber-500/10 border border-amber-500/40 text-amber-200 p-6 rounded-2xl text-xs space-y-2 text-left">
-                <div className="flex items-center gap-2 font-bold text-amber-400 text-sm">
-                  <CheckCircle2 className="w-5 h-5" />
-                  <span>VIP Lounge Reservation Simulated!</span>
-                </div>
-                <p className="text-xs leading-relaxed text-neutral-300">
-                  In production, this routes directly to the VIP Floor Manager for {restaurant.name} on WhatsApp with area ({vipState.loungeArea}), party size ({vipState.partySize}), and date ({vipState.day}).
-                </p>
-                <button
-                  onClick={() => setVipState(prev => ({ ...prev, submitted: false }))}
-                  className="mt-2 text-xs font-bold text-amber-400 underline"
-                >
-                  Test Another Reservation
-                </button>
-              </div>
-            ) : (
-              <form
-                onSubmit={(e) => {
-                  e.preventDefault();
-                  setVipState(prev => ({ ...prev, submitted: true }));
-                }}
-                className="space-y-4 pt-2 text-left text-xs"
-              >
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                  <div>
-                    <label className="font-bold text-neutral-300 block mb-1.5">Lounge Area</label>
-                    <select
-                      value={vipState.loungeArea}
-                      onChange={(e) => setVipState(prev => ({ ...prev, loungeArea: e.target.value }))}
-                      className="w-full p-3 rounded-xl border border-neutral-700 bg-neutral-800 text-white font-medium"
-                    >
-                      <option>Rooftop Skydeck Terrace (Best View)</option>
-                      <option>Main DJ Dancefloor Booth</option>
-                      <option>Private VIP Speakeasy Den</option>
-                    </select>
-                  </div>
-
-                  <div>
-                    <label className="font-bold text-neutral-300 block mb-1.5">Party Size</label>
-                    <select
-                      value={vipState.partySize}
-                      onChange={(e) => setVipState(prev => ({ ...prev, partySize: e.target.value }))}
-                      className="w-full p-3 rounded-xl border border-neutral-700 bg-neutral-800 text-white font-medium"
-                    >
-                      <option>Couples (2 Guests)</option>
-                      <option>Group (4 - 6 Guests)</option>
-                      <option>VIP Stags / Large (8+ Guests)</option>
-                      <option>Full Corporate Booking (20+)</option>
-                    </select>
-                  </div>
-                </div>
-
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                  <div>
-                    <label className="font-bold text-neutral-300 block mb-1.5">Night</label>
-                    <select
-                      value={vipState.day}
-                      onChange={(e) => setVipState(prev => ({ ...prev, day: e.target.value }))}
-                      className="w-full p-3 rounded-xl border border-neutral-700 bg-neutral-800 text-white font-medium"
-                    >
-                      <option>Friday Night - Sundowner</option>
-                      <option>Saturday Night - Headliner DJ</option>
-                      <option>Sunday Brunch & Sangria</option>
-                      <option>Weekday Cocktail Evening</option>
-                    </select>
-                  </div>
-
-                  <div>
-                    <label className="font-bold text-neutral-300 block mb-1.5">Time</label>
-                    <select
-                      value={vipState.time}
-                      onChange={(e) => setVipState(prev => ({ ...prev, time: e.target.value }))}
-                      className="w-full p-3 rounded-xl border border-neutral-700 bg-neutral-800 text-white font-medium"
-                    >
-                      <option>7:00 PM (Sunset Hours)</option>
-                      <option>8:30 PM (Peak Party)</option>
-                      <option>10:00 PM (Late Night Vibe)</option>
-                    </select>
-                  </div>
-                </div>
-
-                <button
-                  type="submit"
-                  className="w-full py-4 bg-amber-500 hover:bg-amber-400 text-black font-black rounded-2xl text-xs uppercase tracking-wider transition shadow-xl shadow-amber-500/20"
-                >
-                  Confirm VIP Reservation Request
-                </button>
-              </form>
-            )}
-          </div>
-        </section>
-      )}
 
       {/* Verified Reviews */}
       <section id="reviews" className="py-24 px-4 sm:px-6 lg:px-8 max-w-6xl mx-auto">
