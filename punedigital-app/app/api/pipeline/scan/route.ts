@@ -161,7 +161,7 @@ export async function POST(request: NextRequest) {
 
         const cleanPhone = spot.phone.replace(/[^0-9]/g, "");
         const formattedPhone = cleanPhone.length === 10 ? `91${cleanPhone}` : cleanPhone;
-        const demoUrl = `${baseUrl}/s/${slug}?name=${encodeURIComponent(spot.name)}&area=${encodeURIComponent(spot.area)}${spot.id ? `&placeId=${encodeURIComponent(spot.id)}` : ''}`;
+        const demoUrl = `${baseUrl}/s/${slug}`;
 
         // Dynamic authentic venue photography
         const smartVenuePhotos = getSmartVenuePhotos(spot.name);
@@ -262,7 +262,7 @@ export async function POST(request: NextRequest) {
         const cleanPhone = phone.replace(/[^0-9]/g, "");
         const formattedPhone = cleanPhone.length === 10 ? `91${cleanPhone}` : cleanPhone;
 
-        const demoUrl = `${baseUrl}/s/${slug}?name=${encodeURIComponent(name)}&area=${encodeURIComponent(area)}${p.id ? `&placeId=${encodeURIComponent(p.id)}` : ''}${apiKey ? `&key=${encodeURIComponent(apiKey)}` : ''}`;
+        const demoUrl = `${baseUrl}/s/${slug}`;
 
         // Intelligent Venue Photo Matching
         const smartVenuePhotos = getSmartVenuePhotos(name);

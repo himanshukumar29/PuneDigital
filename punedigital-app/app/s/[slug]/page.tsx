@@ -213,12 +213,71 @@ const MOCK_RESTAURANTS: Record<string, any> = {
 };
 
 
+// Synchronous initial config generator — guarantees zero loading flash on clean URLs
+function buildInitialConfig(slug: string, queryName?: string | null, queryArea?: string | null) {
+  const raw = MOCK_RESTAURANTS[slug] || MOCK_RESTAURANTS["artizen-cafe-baner"] || MOCK_RESTAURANTS["default"];
+  
+  // Format slug cleanly into title: e.g. "midori-coffee-and-eatery" -> "Midori Coffee And Eatery"
+  const derivedName = slug
+    .split("-")
+    .map(w => w.charAt(0).toUpperCase() + w.slice(1))
+    .join(" ");
+
+  const restaurantName = queryName || (raw.slug === slug ? raw.restaurant.name : derivedName);
+  const restaurantArea = queryArea || raw.restaurant.area || "Baner, Pune";
+
+  // Brand-specific venue photo intelligence
+  const smartPhotos = getSmartVenuePhotos(restaurantName);
+
+  // Auto-detect theme archetype from restaurant name
+  const lowerName = restaurantName.toLowerCase();
+  let detectedTheme: ArchetypeId = raw.theme?.archetype_id || "artisanal-cafe";
+  if (
+    lowerName.includes("brew") ||
+    lowerName.includes("bar") ||
+    lowerName.includes("pub") ||
+    lowerName.includes("lounge") ||
+    lowerName.includes("tap") ||
+    lowerName.includes("deck") ||
+    lowerName.includes("night")
+  ) {
+    detectedTheme = "resto-bar";
+  } else if (
+    lowerName.includes("burger") ||
+    lowerName.includes("pizza") ||
+    lowerName.includes("qsr") ||
+    lowerName.includes("fast") ||
+    lowerName.includes("crave") ||
+    lowerName.includes("fries")
+  ) {
+    detectedTheme = "street-qsr";
+  }
+
+  return {
+    ...raw,
+    restaurant: {
+      ...raw.restaurant,
+      name: restaurantName,
+      area: restaurantArea,
+    },
+    theme: {
+      ...raw.theme,
+      archetype_id: detectedTheme,
+    },
+    assets: {
+      hero_image: smartPhotos[0]?.url || raw.assets.hero_image,
+      photos: smartPhotos,
+    }
+  };
+}
+
 export default function DemoRestaurantPage({ params }: { params: { slug: string } }) {
+  const initialData = buildInitialConfig(params.slug);
   const [activeTier, setActiveTier] = useState<1 | 2>(2);
-  const [activeTheme, setActiveTheme] = useState<ArchetypeId>("artisanal-cafe");
+  const [activeTheme, setActiveTheme] = useState<ArchetypeId>(initialData.theme.archetype_id);
   const [animationsEnabled, setAnimationsEnabled] = useState<boolean>(true);
   const [isPricingOpen, setIsPricingOpen] = useState(false);
-  const [config, setConfig] = useState<any>(null);
+  const [config, setConfig] = useState<any>(initialData);
 
   useEffect(() => {
     const searchParams = typeof window !== "undefined" ? new URLSearchParams(window.location.search) : null;
@@ -227,7 +286,7 @@ export default function DemoRestaurantPage({ params }: { params: { slug: string 
     const placeId = searchParams?.get("placeId");
     const queryKey = searchParams?.get("key");
 
-    // Persist API key in localStorage across tabs & reloads
+    // Read API key from query or localStorage
     const activeKey = queryKey || (typeof window !== "undefined" ? localStorage.getItem("punedigital_google_key") : null) || "";
     if (queryKey && typeof window !== "undefined") {
       try {
@@ -237,44 +296,19 @@ export default function DemoRestaurantPage({ params }: { params: { slug: string 
       }
     }
 
-    const raw = MOCK_RESTAURANTS[params.slug] || MOCK_RESTAURANTS["artizen-cafe-baner"] || MOCK_RESTAURANTS["default"];
-    const restaurantName = queryName || (raw.slug === params.slug ? raw.restaurant.name : params.slug.split("-").map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(" "));
-    const restaurantArea = queryArea || raw.restaurant.area || "Baner, Pune";
-
-    // Immediate brand-specific venue photo intelligence
-    const smartPhotos = getSmartVenuePhotos(restaurantName);
-
-    // Auto-detect best theme archetype from venue name
-    const lowerName = restaurantName.toLowerCase();
-    let detectedTheme: ArchetypeId = raw.theme?.archetype_id || "artisanal-cafe";
-    if (lowerName.includes("brew") || lowerName.includes("bar") || lowerName.includes("pub") || lowerName.includes("lounge") || lowerName.includes("tap") || lowerName.includes("deck") || lowerName.includes("night")) {
-      detectedTheme = "resto-bar";
-    } else if (lowerName.includes("burger") || lowerName.includes("pizza") || lowerName.includes("qsr") || lowerName.includes("fast") || lowerName.includes("crave") || lowerName.includes("fries")) {
-      detectedTheme = "street-qsr";
+    // If query parameters refined the name/area, update config
+    if (queryName || queryArea) {
+      const refined = buildInitialConfig(params.slug, queryName, queryArea);
+      setConfig(refined);
+      setActiveTheme(refined.theme.archetype_id);
     }
 
-    const formatted = {
-      ...raw,
-      restaurant: {
-        ...raw.restaurant,
-        name: restaurantName,
-        area: restaurantArea,
-      },
-      theme: {
-        ...raw.theme,
-        archetype_id: detectedTheme,
-      },
-      assets: {
-        hero_image: smartPhotos[0]?.url || raw.assets.hero_image,
-        photos: smartPhotos,
-      }
-    };
-    setConfig(formatted);
-    setActiveTheme(detectedTheme);
+    const currentName = queryName || config.restaurant.name;
+    const currentArea = queryArea || config.restaurant.area;
 
-    // Background live Google Places sync for real metadata & photos
-    const searchQuery = `${restaurantName} ${restaurantArea}`;
-    const endpoint = `/api/places/live?query=${encodeURIComponent(searchQuery)}&theme=${encodeURIComponent(detectedTheme)}${placeId ? `&placeId=${encodeURIComponent(placeId)}` : ''}${activeKey ? `&key=${encodeURIComponent(activeKey)}` : ''}`;
+    // Background live Google Places sync for real metadata & ratings
+    const searchQuery = `${currentName} ${currentArea}`;
+    const endpoint = `/api/places/live?query=${encodeURIComponent(searchQuery)}&theme=${encodeURIComponent(config.theme?.archetype_id || 'artisanal-cafe')}${placeId ? `&placeId=${encodeURIComponent(placeId)}` : ''}${activeKey ? `&key=${encodeURIComponent(activeKey)}` : ''}`;
 
     fetch(endpoint)
       .then(res => res.json())

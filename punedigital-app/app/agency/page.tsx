@@ -80,21 +80,6 @@ export default function AgencyCommanderPage() {
     }
   };
 
-  const getDemoUrlWithKey = (url: string) => {
-    if (!apiKey) return url;
-    try {
-      const u = new URL(url, publicBaseUrl);
-      if (!u.searchParams.get("key")) {
-        u.searchParams.set("key", apiKey.trim());
-      }
-      return u.toString();
-    } catch {
-      return url.includes("?")
-        ? `${url}&key=${encodeURIComponent(apiKey.trim())}`
-        : `${url}?key=${encodeURIComponent(apiKey.trim())}`;
-    }
-  };
-
   // Outreach Modal State
   const [activeLead, setActiveLead] = useState<Lead | null>(null);
   const [pitchChannel, setPitchChannel] = useState<"whatsapp" | "email">("whatsapp");
@@ -152,9 +137,10 @@ export default function AgencyCommanderPage() {
   const openOutreachModal = (lead: Lead, channel: "whatsapp" | "email") => {
     setActiveLead(lead);
     setPitchChannel(channel);
-    const activeDemoUrl = getDemoUrlWithKey(lead.demoUrl);
+    // Guarantee 100% clean, professional link with NO tracking parameters or exposed API keys
+    const cleanDemoUrl = `${publicBaseUrl.replace(/\/$/, '')}/s/${lead.slug}`;
     const rawPitch = channel === "whatsapp" ? lead.whatsappPitch : lead.emailPitch;
-    const finalPitch = rawPitch.replace(lead.demoUrl, activeDemoUrl);
+    const finalPitch = rawPitch.replace(lead.demoUrl, cleanDemoUrl);
     setEditablePitch(finalPitch);
     setEditableSubject(lead.emailSubject);
     setCopiedState(false);
@@ -546,7 +532,7 @@ export default function AgencyCommanderPage() {
                       {/* Action Buttons Row */}
                       <div className="space-y-2 pt-4 border-t border-slate-800">
                         <a
-                          href={getDemoUrlWithKey(lead.demoUrl)}
+                          href={`${publicBaseUrl.replace(/\/$/, '')}/s/${lead.slug}`}
                           target="_blank"
                           rel="noreferrer"
                           className="w-full py-2.5 bg-amber-400 hover:bg-amber-300 text-slate-950 font-black text-xs uppercase tracking-wider rounded-xl transition flex items-center justify-center gap-1.5 shadow-md active:scale-95"
