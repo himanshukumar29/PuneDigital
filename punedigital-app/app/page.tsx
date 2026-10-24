@@ -327,7 +327,7 @@ export default function AgencyHomePage() {
                   </li>
                   <li className="flex items-center gap-2">
                     <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400 shrink-0" />
-                    <span>Fast 48-Hour Handover & QR Menu</span>
+                    <span>Fast 48-Hour Handover & Launch</span>
                   </li>
                 </ul>
               </div>
@@ -378,10 +378,6 @@ export default function AgencyHomePage() {
                     <li className="flex items-center gap-2">
                       <CheckCircle2 className="w-3.5 h-3.5 text-amber-400 shrink-0" />
                       <span>Ongoing Menu & Price Changes Handled by Agency</span>
-                    </li>
-                    <li className="flex items-center gap-2">
-                      <CheckCircle2 className="w-3.5 h-3.5 text-amber-400 shrink-0" />
-                      <span>Scan-at-Table Dynamic QR Menu Standees</span>
                     </li>
                     <li className="flex items-center gap-2">
                       <CheckCircle2 className="w-3.5 h-3.5 text-amber-400 shrink-0" />

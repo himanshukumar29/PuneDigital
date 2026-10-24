@@ -2,8 +2,8 @@ import type { Metadata } from "next";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "PuneDigital | Ultra-Luxury Restaurant Websites & 0% Comm Direct Ordering",
-  description: "Bespoke digital storefronts, QR table reservation suites, and 0% commission direct-ordering engines for Pune's finest dining destinations.",
+  title: "PuneDigital | Ultra-Luxury Bespoke Restaurant Websites & Managed Cloud Care",
+  description: "Bespoke digital storefronts, custom brand designs, and high-performance managed cloud websites for Pune's finest dining destinations.",
 };
 
 export default function RootLayout({

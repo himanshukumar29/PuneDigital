@@ -64,7 +64,7 @@ export function PricingDrawer({
               </p>
 
               <div className="mt-3 inline-block bg-gradient-to-r from-amber-500/10 via-amber-500/20 to-amber-500/10 border border-amber-500/30 text-amber-300 text-xs px-4 py-1.5 rounded-full font-medium">
-                🎁 Pune Launch Special: Free .in Domain + QR Standees included
+                🎁 Pune Launch Special: Free .in Domain Included
               </div>
             </div>
 
@@ -162,10 +162,6 @@ export function PricingDrawer({
                     <li className="flex items-center gap-2">
                       <Check className="w-3.5 h-3.5 text-amber-400 shrink-0" />
                       <span>Ongoing Menu & Price Changes Handled by Agency</span>
-                    </li>
-                    <li className="flex items-center gap-2">
-                      <Check className="w-3.5 h-3.5 text-amber-400 shrink-0" />
-                      <span>Scan-at-Table Dynamic QR Menu Standees</span>
                     </li>
                     <li className="flex items-center gap-2">
                       <Check className="w-3.5 h-3.5 text-amber-400 shrink-0" />

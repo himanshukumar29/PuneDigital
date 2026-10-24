@@ -136,7 +136,7 @@ const MOCK_RESTAURANTS: Record<string, any> = {
     pricing: {
       tier1_price: 2999,
       tier2_price: 4999,
-      special_offer: "Launch Offer: Free .in Domain + QR Standees if claimed this week"
+      special_offer: "Launch Offer: Free .in Domain included if claimed this week"
     },
     demo: {
       status: "pending_review",
@@ -202,7 +202,7 @@ const MOCK_RESTAURANTS: Record<string, any> = {
     pricing: {
       tier1_price: 2999,
       tier2_price: 4999,
-      special_offer: "Launch Offer: Free .in Domain + QR Standees if claimed this week"
+      special_offer: "Launch Offer: Free .in Domain included if claimed this week"
     },
     demo: {
       status: "pending_review",
