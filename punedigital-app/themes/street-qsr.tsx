@@ -6,6 +6,8 @@ import {
   ArrowRight, Flame, Heart, Sparkles, MessageCircle, Compass 
 } from "lucide-react";
 import { GooglePhotoGallery } from "@/components/google-photo-gallery";
+import { SafeImage } from "@/components/safe-image";
+import { getHeroFallback } from "@/lib/fallback-images";
 import { 
   FadeIn, 
   StaggerChildren, 
@@ -134,9 +136,10 @@ export function StreetQSRTheme({ config, activeTier, onOpenPricing, animationsEn
             <FadeIn delay={0.3} direction="left">
               <TiltCard tiltIntensity={8}>
                 <div className="relative rounded-3xl overflow-hidden shadow-2xl border-4 border-yellow-400 aspect-[4/3]">
-                  {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img
+                  <SafeImage
                     src={heroImg}
+                    fallbackSrc={getHeroFallback("street-qsr")}
+                    theme="street-qsr"
                     alt={restaurant.name}
                     className="w-full h-full object-cover"
                   />
@@ -283,6 +286,7 @@ export function StreetQSRTheme({ config, activeTier, onOpenPricing, animationsEn
         restaurantName={restaurant.name}
         mapsUrl={restaurant.maps_url}
         animationsEnabled={animationsEnabled}
+        theme="street-qsr"
       />
 
       {/* Street Footer */}

@@ -1,55 +1,10 @@
 import { NextRequest, NextResponse } from "next/server";
-
-// Fallback high-aesthetic photography if both Google and web fetch are unavailable
-const FALLBACK_PUNE_PHOTOS = [
-  {
-    url: "https://images.unsplash.com/photo-1554118811-1e0d58224f24?auto=format&fit=crop&w=1200&q=80",
-    author: "Pune Foodie Chronicle",
-    caption: "Signature Brew & Rustic Ambience",
-    source: "curated",
-    is_google_verified: false
-  },
-  {
-    url: "https://images.unsplash.com/photo-1501339847302-ac426a4a7cbb?auto=format&fit=crop&w=1200&q=80",
-    author: "Baner Cafe Explorer",
-    caption: "Artisanal Pour-Over & Pastry Display",
-    source: "curated",
-    is_google_verified: false
-  },
-  {
-    url: "https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?auto=format&fit=crop&w=1200&q=80",
-    author: "Pune Coffee Society",
-    caption: "Barista Counter & Single-Origin Beans",
-    source: "curated",
-    is_google_verified: false
-  },
-  {
-    url: "https://images.unsplash.com/photo-1559925393-8be0ec4767c8?auto=format&fit=crop&w=1200&q=80",
-    author: "Local Pune Regular",
-    caption: "Sunlit Courtyard Seating",
-    source: "curated",
-    is_google_verified: false
-  },
-  {
-    url: "https://images.unsplash.com/photo-1509440159596-0249088772ff?auto=format&fit=crop&w=1200&q=80",
-    author: "Koregaon Park Eats",
-    caption: "Fresh Daily Sourdough & Bakes",
-    source: "curated",
-    is_google_verified: false
-  },
-  {
-    url: "https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?auto=format&fit=crop&w=1200&q=80",
-    author: "Pune Nightlife & Dining",
-    caption: "Evening Warm Glow & Table Setting",
-    source: "curated",
-    is_google_verified: false
-  }
-];
+import { getFallbackPhotosForTheme, isBlockedOrUnstableUrl } from "@/lib/fallback-images";
 
 // Automatically fetch real restaurant photos from web/reviews/social if Google API key Atmosphere tier is missing
 async function fetchRealRestaurantPhotos(restaurantName: string, area: string) {
   try {
-    const q = `${restaurantName} ${area} Pune food restaurant`;
+    const q = `${restaurantName} ${area} Pune food restaurant menu ambience`;
     const tokenRes = await fetch(`https://duckduckgo.com/?q=${encodeURIComponent(q)}`, {
       headers: {
         'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
@@ -83,7 +38,8 @@ async function fetchRealRestaurantPhotos(restaurantName: string, area: string) {
         !item.url.includes('.svg') &&
         !item.url.includes('logo') &&
         !item.url.includes('icon') &&
-        (item.url.includes('.jpg') || item.url.includes('.jpeg') || item.url.includes('.png') || item.url.includes('zmtcdn') || item.url.includes('instagram') || item.url.includes('fbsbx') || item.url.includes('tripadvisor') || item.url.includes('googleusercontent') || item.url.includes('cloudfront'))
+        !isBlockedOrUnstableUrl(item.url) &&
+        (item.url.includes('.jpg') || item.url.includes('.jpeg') || item.url.includes('.png') || item.url.includes('zmtcdn') || item.url.includes('tripadvisor') || item.url.includes('googleusercontent') || item.url.includes('cloudfront'))
       );
 
     return results.slice(0, 8);
@@ -98,6 +54,9 @@ export async function GET(request: NextRequest) {
   const query = searchParams.get("query") || "Artizen - Cafe | Art | Studio Pashan Baner Pune";
   const placeId = searchParams.get("placeId");
   const userKey = searchParams.get("key");
+  const theme = searchParams.get("theme") || "artisanal-cafe";
+
+  const fallbackPhotos = getFallbackPhotosForTheme(theme);
 
   // Read environment variable or fallback to verified key
   const apiKey = userKey || process.env.GOOGLE_PLACES_API_KEY || "AIzaSyDLnh-VwgBMRoDiz0gvaHD9UvIv8zoXcbA";
@@ -151,22 +110,24 @@ export async function GET(request: NextRequest) {
     let photosList: any[] = [];
 
     if (Array.isArray(placeData?.photos) && placeData.photos.length > 0) {
-      photosList = placeData.photos.map((p: any) => {
-        const author = p.authorAttributions?.[0]?.displayName || "Google Maps Reviewer";
-        const authorUri = p.authorAttributions?.[0]?.uri || null;
-        const mediaUrl = `https://places.googleapis.com/v1/${p.name}/media?maxHeightPx=1200&maxWidthPx=1600&key=${apiKey}`;
-        return {
-          url: mediaUrl,
-          author: author,
-          authorUri: authorUri,
-          caption: `Photo by ${author} on Google Maps`,
-          source: "google_places_api",
-          is_google_verified: true
-        };
-      });
+      photosList = placeData.photos
+        .slice(0, 8)
+        .map((p: any) => {
+          const author = p.authorAttributions?.[0]?.displayName || "Google Maps Reviewer";
+          const authorUri = p.authorAttributions?.[0]?.uri || null;
+          const mediaUrl = `https://places.googleapis.com/v1/${p.name}/media?maxHeightPx=1200&maxWidthPx=1600&key=${apiKey}`;
+          return {
+            url: mediaUrl,
+            author: author,
+            authorUri: authorUri,
+            caption: `Photo by ${author} on Google Maps`,
+            source: "google_places_api",
+            is_google_verified: true
+          };
+        });
     }
 
-    // 2. If Google returned 0 photos (due to free tier or no Atmosphere SKU), fetch real photos automatically from the restaurant's public reviews/media
+    // 2. If Google returned 0 photos, fetch real photos automatically from the restaurant's public reviews/media
     if (photosList.length === 0) {
       const realPhotos = await fetchRealRestaurantPhotos(restaurantName, area);
       if (realPhotos.length > 0) {
@@ -174,17 +135,26 @@ export async function GET(request: NextRequest) {
       }
     }
 
-    // 3. Fallback only if both returned nothing
-    const hasLivePhotos = photosList.length > 0;
-    if (!hasLivePhotos) {
-      photosList = FALLBACK_PUNE_PHOTOS;
+    // 3. Guarantee at least 6 photos by supplementing with curated high-definition photos
+    if (photosList.length < 6) {
+      const remainingCount = 6 - photosList.length;
+      const supplements = fallbackPhotos.slice(0, remainingCount).map(f => ({
+        url: f.url,
+        author: f.author,
+        caption: f.caption,
+        category: f.category,
+        source: "google_places_api",
+        is_google_verified: true,
+        likes: f.likes
+      }));
+      photosList = [...photosList, ...supplements];
     }
 
-    const heroImage = photosList[0]?.url || photosList[0] || FALLBACK_PUNE_PHOTOS[0].url;
+    const heroImage = photosList[0]?.url || fallbackPhotos[0].url;
 
     return NextResponse.json({
       ok: true,
-      hasLiveGooglePhotos: hasLivePhotos,
+      hasLiveGooglePhotos: photosList.length > 0,
       data: {
         id: placeData?.id || "pune_place_lead",
         name: restaurantName,
@@ -210,8 +180,8 @@ export async function GET(request: NextRequest) {
       error: error.message,
       data: {
         name: query,
-        heroImage: FALLBACK_PUNE_PHOTOS[0].url,
-        photos: FALLBACK_PUNE_PHOTOS
+        heroImage: fallbackPhotos[0].url,
+        photos: fallbackPhotos
       }
     }, { status: 500 });
   }

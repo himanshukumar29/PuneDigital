@@ -6,10 +6,13 @@ import {
   X, CheckCircle2, User, Eye, MapPin
 } from "lucide-react";
 import { FadeIn, StaggerChildren, StaggerItem, TiltCard } from "@/components/motion";
+import { SafeImage } from "@/components/safe-image";
+import { getFallbackPhotosForTheme, isBlockedOrUnstableUrl, FallbackPhoto } from "@/lib/fallback-images";
 import { motion, AnimatePresence } from "framer-motion";
 
 export interface PhotoItem {
   url: string;
+  fallbackUrl?: string;
   author?: string;
   authorUri?: string | null;
   caption?: string;
@@ -24,6 +27,7 @@ interface GooglePhotoGalleryProps {
   restaurantName: string;
   mapsUrl?: string;
   animationsEnabled?: boolean;
+  theme?: string;
 }
 
 export function GooglePhotoGallery({
@@ -31,29 +35,60 @@ export function GooglePhotoGallery({
   restaurantName,
   mapsUrl = "https://maps.google.com",
   animationsEnabled = true,
+  theme = "artisanal-cafe",
 }: GooglePhotoGalleryProps) {
-  // Normalize photos into PhotoItem objects
-  const normalizedPhotos: PhotoItem[] = photos.map((p, idx) => {
-    if (typeof p === "string") {
-      const categories: ("Ambience" | "Signature Dishes" | "Patron Snaps" | "Bakes")[] = [
-        "Ambience", "Signature Dishes", "Patron Snaps", "Bakes", "Ambience", "Signature Dishes"
-      ];
-      return {
-        url: p,
-        author: `Pune Foodie #${idx + 1}`,
-        caption: `${restaurantName} Moment #${idx + 1}`,
-        category: categories[idx % categories.length],
-        source: "google_places_api",
+  const fallbackCollection = getFallbackPhotosForTheme(theme);
+
+  // Normalize photos into PhotoItem objects with guaranteed fallbacks
+  const normalizedPhotos: PhotoItem[] = (() => {
+    // If incoming photos list is empty, return entire curated collection
+    if (!photos || photos.length === 0) {
+      return fallbackCollection.map((f, idx) => ({
+        url: f.url,
+        fallbackUrl: f.url,
+        author: f.author,
+        caption: f.caption,
+        category: f.category,
+        source: f.source as any,
         is_google_verified: true,
-        likes: 42 + idx * 17
-      };
+        likes: f.likes,
+      }));
     }
-    return {
-      ...p,
-      category: p.category || (idx % 2 === 0 ? "Ambience" : "Signature Dishes"),
-      likes: p.likes || 35 + idx * 12
-    };
-  });
+
+    const categories: ("Ambience" | "Signature Dishes" | "Patron Snaps" | "Bakes")[] = [
+      "Ambience", "Signature Dishes", "Patron Snaps", "Bakes", "Ambience", "Signature Dishes"
+    ];
+
+    return photos.map((p, idx) => {
+      const fallbackItem = fallbackCollection[idx % fallbackCollection.length];
+      const fallbackUrl = fallbackItem.url;
+
+      if (typeof p === "string") {
+        const isBad = isBlockedOrUnstableUrl(p);
+        return {
+          url: isBad ? fallbackUrl : p,
+          fallbackUrl: fallbackUrl,
+          author: fallbackItem.author || `Pune Foodie #${idx + 1}`,
+          caption: fallbackItem.caption || `${restaurantName} Moment #${idx + 1}`,
+          category: categories[idx % categories.length],
+          source: "google_places_api",
+          is_google_verified: true,
+          likes: 42 + idx * 17
+        };
+      }
+
+      const isBad = isBlockedOrUnstableUrl(p.url);
+      return {
+        ...p,
+        url: isBad ? fallbackUrl : p.url,
+        fallbackUrl: fallbackUrl,
+        author: p.author || fallbackItem.author,
+        caption: p.caption || fallbackItem.caption,
+        category: p.category || fallbackItem.category || categories[idx % categories.length],
+        likes: p.likes || 35 + idx * 12
+      };
+    });
+  })();
 
   const [activeFilter, setActiveFilter] = useState<string>("All");
   const [activePhotoIndex, setActivePhotoIndex] = useState<number | null>(null);
@@ -162,10 +197,11 @@ export function GooglePhotoGallery({
                     : ""
                 }`}
               >
-                {/* Photo Image */}
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img
+                {/* Photo Image using SafeImage with automatic error recovery */}
+                <SafeImage
                   src={photo.url}
+                  fallbackSrc={photo.fallbackUrl}
+                  theme={theme}
                   alt={photo.caption || `${restaurantName} photo ${idx + 1}`}
                   className="w-full h-full object-cover transform group-hover:scale-105 transition-transform duration-700 ease-out"
                   loading="lazy"
@@ -257,9 +293,10 @@ export function GooglePhotoGallery({
               onClick={(e) => e.stopPropagation()}
               className="max-w-4xl max-h-[85vh] w-full flex flex-col items-center relative rounded-3xl overflow-hidden border border-white/20 shadow-2xl bg-black"
             >
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img
+              <SafeImage
                 src={filteredPhotos[activePhotoIndex].url}
+                fallbackSrc={filteredPhotos[activePhotoIndex].fallbackUrl}
+                theme={theme}
                 alt={filteredPhotos[activePhotoIndex].caption || restaurantName}
                 className="w-full h-full max-h-[72vh] object-contain"
               />

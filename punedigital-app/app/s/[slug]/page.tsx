@@ -33,10 +33,10 @@ const MOCK_RESTAURANTS: Record<string, any> = {
       accent_color: "#d4a574"
     },
     assets: {
-      hero_image: "https://im.whatshot.in/img/2023/Jul/collage-maker-03-jul-2023-09-17-pm-8557-1688399243.jpg?wm=1&w=1200&h=630&cc=1",
+      hero_image: "https://images.unsplash.com/photo-1554118811-1e0d58224f24?auto=format&fit=crop&w=1600&q=80",
       photos: [
         {
-          url: "https://im.whatshot.in/img/2023/Jul/collage-maker-03-jul-2023-09-17-pm-8557-1688399243.jpg?wm=1&w=1200&h=630&cc=1",
+          url: "https://images.unsplash.com/photo-1554118811-1e0d58224f24?auto=format&fit=crop&w=1200&q=80",
           author: "Whatshot Pune Food Chronicle",
           caption: "Artizen Cafe & Art Studio Ambience",
           category: "Ambience",
@@ -45,7 +45,7 @@ const MOCK_RESTAURANTS: Record<string, any> = {
           likes: 84
         },
         {
-          url: "https://lookaside.instagram.com/seo/google_widget/crawler/?media_id=3309811837184901784",
+          url: "https://images.unsplash.com/photo-1501339847302-ac426a4a7cbb?auto=format&fit=crop&w=1200&q=80",
           author: "Artizen Cafe Official",
           caption: "Handcrafted Specialty Brews & Studio Art",
           category: "Patron Snaps",
@@ -54,7 +54,7 @@ const MOCK_RESTAURANTS: Record<string, any> = {
           likes: 92
         },
         {
-          url: "https://i.ytimg.com/vi/58no3vA7yyE/maxresdefault.jpg",
+          url: "https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?auto=format&fit=crop&w=1200&q=80",
           author: "Pune Explorer Vlogs",
           caption: "Courtyard Seating & Artisanal Menu",
           category: "Ambience",
@@ -63,7 +63,7 @@ const MOCK_RESTAURANTS: Record<string, any> = {
           likes: 76
         },
         {
-          url: "https://lookaside.instagram.com/seo/google_widget/crawler/?media_id=3421355859878119619",
+          url: "https://images.unsplash.com/photo-1559925393-8be0ec4767c8?auto=format&fit=crop&w=1200&q=80",
           author: "Artizen Art Community",
           caption: "Weekend Art & Pottery Workshops",
           category: "Patron Snaps",
@@ -72,7 +72,7 @@ const MOCK_RESTAURANTS: Record<string, any> = {
           likes: 110
         },
         {
-          url: "https://i.ytimg.com/vi/ekIMb8MXCS0/maxresdefault.jpg",
+          url: "https://images.unsplash.com/photo-1509440159596-0249088772ff?auto=format&fit=crop&w=1200&q=80",
           author: "Komal Panjwani (Foodie Guide)",
           caption: "Signature Bakes & Sourdough Selection",
           category: "Bakes",
@@ -81,7 +81,7 @@ const MOCK_RESTAURANTS: Record<string, any> = {
           likes: 65
         },
         {
-          url: "https://lookaside.instagram.com/seo/google_widget/crawler/?media_id=3528096592155643973",
+          url: "https://images.unsplash.com/photo-1514432324607-a09d9b4aefdd?auto=format&fit=crop&w=1200&q=80",
           author: "Baner Regular Patron",
           caption: "Slow-Drip Pour Over Experience",
           category: "Signature Dishes",
@@ -235,7 +235,8 @@ export default function DemoRestaurantPage({ params }: { params: { slug: string 
 
     // Background live Google Places sync for real metadata & photos
     const searchQuery = formatted.restaurant.name + " " + (formatted.restaurant.area || "Pune");
-    fetch(`/api/places/live?query=${encodeURIComponent(searchQuery)}`)
+    const themeParam = formatted.theme?.archetype_id || "artisanal-cafe";
+    fetch(`/api/places/live?query=${encodeURIComponent(searchQuery)}&theme=${encodeURIComponent(themeParam)}`)
       .then(res => res.json())
       .then(result => {
         if (result?.ok && result.data) {

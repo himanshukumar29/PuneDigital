@@ -7,6 +7,8 @@ import {
   ArrowUpRight, Share2, Compass, MessageCircle
 } from "lucide-react";
 import { GooglePhotoGallery } from "@/components/google-photo-gallery";
+import { SafeImage } from "@/components/safe-image";
+import { getHeroFallback } from "@/lib/fallback-images";
 import { 
   FadeIn, 
   StaggerChildren, 
@@ -150,9 +152,10 @@ export function ArtisanalCafeTheme({ config, activeTier, onOpenPricing, animatio
                 <div className="relative mx-auto max-w-md">
                   {/* Main Photo Card */}
                   <ImageReveal direction="left" delay={0.2} className="rounded-3xl overflow-hidden shadow-2xl border-4 border-white aspect-[4/5] bg-stone-200">
-                    {/* eslint-disable-next-line @next/next/no-img-element */}
-                    <img
+                    <SafeImage
                       src={heroImg}
+                      fallbackSrc={getHeroFallback("artisanal-cafe")}
+                      theme="artisanal-cafe"
                       alt={restaurant.name}
                       className="w-full h-full object-cover transform hover:scale-105 transition duration-700"
                     />
@@ -355,6 +358,7 @@ export function ArtisanalCafeTheme({ config, activeTier, onOpenPricing, animatio
         restaurantName={restaurant.name}
         mapsUrl={restaurant.maps_url}
         animationsEnabled={animationsEnabled}
+        theme="artisanal-cafe"
       />
 
       {/* Visiting Hours & Concierge Footer */}

@@ -6,6 +6,8 @@ import {
   Flame, ShoppingBag, ShieldCheck, Compass, MessageCircle, ArrowUpRight, CheckCircle2 
 } from "lucide-react";
 import { GooglePhotoGallery } from "@/components/google-photo-gallery";
+import { SafeImage } from "@/components/safe-image";
+import { getHeroFallback } from "@/lib/fallback-images";
 import { 
   FadeIn, 
   StaggerChildren, 
@@ -71,9 +73,10 @@ export function RestoBarTheme({ config, activeTier, onOpenPricing, animationsEna
       {/* Cinematic Hero Section */}
       <section className="relative min-h-[85vh] flex items-center justify-center overflow-hidden px-4 border-b border-neutral-900">
         <div className="absolute inset-0 z-0">
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img
+          <SafeImage
             src={heroImg}
+            fallbackSrc={getHeroFallback("resto-bar")}
+            theme="resto-bar"
             alt={restaurant.name}
             className="w-full h-full object-cover filter brightness-[0.22] contrast-125 scale-105"
           />
@@ -346,6 +349,7 @@ export function RestoBarTheme({ config, activeTier, onOpenPricing, animationsEna
         restaurantName={restaurant.name}
         mapsUrl={restaurant.maps_url}
         animationsEnabled={animationsEnabled}
+        theme="resto-bar"
       />
 
       {/* Nightclub Footer */}
