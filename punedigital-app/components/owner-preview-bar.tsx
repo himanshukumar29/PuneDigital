@@ -3,6 +3,8 @@
 import React from "react";
 import { Sparkles, Clock, ShieldCheck, Calendar, ArrowRight, Palette, Wand2, Zap } from "lucide-react";
 import { ArchetypeId } from "@/lib/theme-map";
+import { MagneticButton } from "@/components/motion";
+import { motion } from "framer-motion";
 
 interface OwnerPreviewBarProps {
   restaurantName: string;
@@ -90,7 +92,7 @@ export function OwnerPreviewBar({
           {/* Cute Aesthetic Animations Toggle */}
           <button
             onClick={onToggleAnimations}
-            className={`flex items-center gap-1.5 px-3 py-1 rounded-xl text-[11px] font-bold transition-all cursor-pointer ${
+            className={`flex items-center gap-1.5 px-3 py-1 rounded-xl text-[11px] font-bold transition-all cursor-pointer active:scale-95 ${
               animationsEnabled
                 ? "bg-gradient-to-r from-amber-500/20 via-pink-500/20 to-purple-500/20 text-pink-300 border border-pink-500/40 shadow-sm shadow-pink-500/10 hover:scale-105"
                 : "bg-slate-900 text-slate-400 border border-slate-800 hover:text-slate-200"
@@ -130,13 +132,15 @@ export function OwnerPreviewBar({
         </div>
 
         {/* Right: CTA */}
-        <button
-          onClick={onOpenPricing}
-          className="flex items-center gap-2 bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-400 hover:to-amber-500 text-slate-950 font-black px-4 py-1.5 rounded-xl text-xs transition-all shadow-md active:scale-95"
-        >
-          <span>Claim Site (₹2,999 / ₹4,999)</span>
-          <ArrowRight className="w-3.5 h-3.5" />
-        </button>
+        <MagneticButton strength={0.25} as="div">
+          <button
+            onClick={onOpenPricing}
+            className="flex items-center gap-2 bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-400 hover:to-amber-500 text-slate-950 font-black px-4 py-1.5 rounded-xl text-xs transition-all shadow-md active:scale-95"
+          >
+            <span>Claim Site (₹2,999 / ₹4,999)</span>
+            <ArrowRight className="w-3.5 h-3.5" />
+          </button>
+        </MagneticButton>
       </div>
     </div>
   );

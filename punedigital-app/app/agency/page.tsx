@@ -8,6 +8,13 @@ import {
   TrendingUp, Send, CheckCircle2, AlertCircle, ArrowRight
 } from "lucide-react";
 import { CustomCursor } from "@/components/custom-cursor";
+import { 
+  FadeIn, 
+  StaggerChildren, 
+  StaggerItem, 
+  MagneticButton 
+} from "@/components/motion";
+import { motion, AnimatePresence } from "framer-motion";
 
 interface Lead {
   id: string;
@@ -175,178 +182,186 @@ export default function AgencyCommanderPage() {
       <main className="max-w-7xl mx-auto px-4 sm:px-6 py-10 space-y-10">
         
         {/* Banner */}
-        <div className="space-y-2">
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-amber-500/10 border border-amber-500/20 text-amber-400 text-xs font-bold uppercase tracking-wider">
-            <Zap className="w-3.5 h-3.5" />
-            <span>On-Demand Automated Pipeline</span>
+        <FadeIn direction="down">
+          <div className="space-y-2">
+            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-amber-500/10 border border-amber-500/20 text-amber-400 text-xs font-bold uppercase tracking-wider">
+              <Zap className="w-3.5 h-3.5" />
+              <span>On-Demand Automated Pipeline</span>
+            </div>
+            <h1 className="text-3xl sm:text-4xl font-serif font-black text-white">
+              Lead Scanner & 1-Click Outreach Engine
+            </h1>
+            <p className="text-sm text-slate-400 max-w-3xl leading-relaxed">
+              No cloud cron jobs required. Input your rating threshold & target Pune locality to discover qualified restaurants without websites, generate interactive web prototypes, and dispatch personalized pitches.
+            </p>
           </div>
-          <h1 className="text-3xl sm:text-4xl font-serif font-black text-white">
-            Lead Scanner & 1-Click Outreach Engine
-          </h1>
-          <p className="text-sm text-slate-400 max-w-3xl leading-relaxed">
-            No cloud cron jobs required. Input your rating threshold & target Pune locality to discover qualified restaurants without websites, generate interactive web prototypes, and dispatch personalized pitches.
-          </p>
-        </div>
+        </FadeIn>
 
         {/* 1. Control Panel / Input Bar */}
-        <form
-          onSubmit={handleScan}
-          className="bg-slate-900/90 border border-slate-800 rounded-3xl p-6 sm:p-8 shadow-2xl space-y-6"
-        >
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-            
-            {/* API Key */}
-            <div className="space-y-2">
-              <label className="text-xs font-black uppercase tracking-wider text-slate-300 flex items-center justify-between">
-                <span>Google Places API Key</span>
-                <span className="text-[10px] text-amber-400 font-normal">Active</span>
-              </label>
-              <input
-                type="text"
-                value={apiKey}
-                onChange={(e) => setApiKey(e.target.value)}
-                placeholder="AIzaSy..."
-                className="w-full bg-slate-950 border border-slate-800 rounded-xl px-3.5 py-2.5 text-xs text-slate-200 focus:outline-none focus:border-amber-500/60 font-mono"
-              />
-            </div>
-
-            {/* Target Area */}
-            <div className="space-y-2">
-              <label className="text-xs font-black uppercase tracking-wider text-slate-300">
-                Target Locality
-              </label>
-              <div className="flex gap-2">
-                <select
-                  value={selectedArea}
-                  onChange={(e) => {
-                    setSelectedArea(e.target.value);
-                    setCustomArea("");
-                  }}
-                  className="flex-1 bg-slate-950 border border-slate-800 rounded-xl px-3 py-2.5 text-xs text-slate-200 focus:outline-none focus:border-amber-500/60"
-                >
-                  {areasList.map((a) => (
-                    <option key={a} value={a}>
-                      {a}
-                    </option>
-                  ))}
-                </select>
-                <input
-                  type="text"
-                  value={customArea}
-                  onChange={(e) => setCustomArea(e.target.value)}
-                  placeholder="Other..."
-                  className="w-24 bg-slate-950 border border-slate-800 rounded-xl px-2.5 py-2.5 text-xs text-slate-200 focus:outline-none focus:border-amber-500/60"
-                />
-              </div>
-            </div>
-
-            {/* Minimum Rating Bar Slider */}
-            <div className="space-y-2">
-              <div className="flex items-center justify-between text-xs font-black uppercase tracking-wider text-slate-300">
-                <span>Rating Bar Filter</span>
-                <span className="text-amber-400 font-bold flex items-center gap-1 font-sans">
-                  <Star className="w-3.5 h-3.5 fill-amber-400" />
-                  <span>&gt;= {minRating.toFixed(1)} ⭐</span>
-                </span>
-              </div>
-              <input
-                type="range"
-                min="3.8"
-                max="4.8"
-                step="0.1"
-                value={minRating}
-                onChange={(e) => setMinRating(parseFloat(e.target.value))}
-                className="w-full accent-amber-400 cursor-pointer h-2 bg-slate-950 rounded-lg"
-              />
-              <div className="flex justify-between text-[10px] text-slate-500 font-mono">
-                <span>3.8⭐</span>
-                <span>4.1⭐ (Sweet Spot)</span>
-                <span>4.8⭐</span>
-              </div>
-            </div>
-
-            {/* Min Review Count */}
-            <div className="space-y-2">
-              <label className="text-xs font-black uppercase tracking-wider text-slate-300">
-                Minimum Reviews
-              </label>
-              <input
-                type="number"
-                min="10"
-                max="500"
-                value={minReviews}
-                onChange={(e) => setMinReviews(parseInt(e.target.value) || 20)}
-                className="w-full bg-slate-950 border border-slate-800 rounded-xl px-3.5 py-2.5 text-xs text-slate-200 focus:outline-none focus:border-amber-500/60 font-mono"
-              />
-            </div>
-
-            {/* Live Public URL (Vercel / Production Domain) */}
-            <div className="col-span-full pt-2">
-              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-1.5">
-                <label className="text-xs font-black uppercase tracking-wider text-slate-300 flex items-center gap-2">
-                  <span>Public Live Domain (Vercel URL for Outreach)</span>
-                  <span className="text-[10px] text-emerald-400 font-bold bg-emerald-500/10 px-2 py-0.5 rounded-full border border-emerald-500/20">
-                    Auto-Detected
-                  </span>
+        <FadeIn direction="up" delay={0.1}>
+          <form
+            onSubmit={handleScan}
+            className="bg-slate-900/90 border border-slate-800 rounded-3xl p-6 sm:p-8 shadow-2xl space-y-6"
+          >
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+              
+              {/* API Key */}
+              <div className="space-y-2">
+                <label className="text-xs font-black uppercase tracking-wider text-slate-300 flex items-center justify-between">
+                  <span>Google Places API Key</span>
+                  <span className="text-[10px] text-amber-400 font-normal">Active</span>
                 </label>
-                <span className="text-[11px] text-slate-500">
-                  Links in WhatsApp & Email will use this domain so owners can open on mobile
-                </span>
-              </div>
-              <div className="flex items-center gap-2">
                 <input
                   type="text"
-                  value={publicBaseUrl}
-                  onChange={(e) => setPublicBaseUrl(e.target.value)}
-                  placeholder="https://your-agency.vercel.app"
-                  className="flex-1 bg-slate-950 border border-slate-800 rounded-xl px-4 py-2.5 text-xs text-amber-300 font-mono focus:outline-none focus:border-amber-400"
+                  value={apiKey}
+                  onChange={(e) => setApiKey(e.target.value)}
+                  placeholder="AIzaSy..."
+                  className="w-full bg-slate-950 border border-slate-800 rounded-xl px-3.5 py-2.5 text-xs text-slate-200 focus:outline-none focus:border-amber-500/60 font-mono"
                 />
-                <button
-                  type="button"
-                  onClick={() => {
-                    if (typeof window !== "undefined") setPublicBaseUrl(window.location.origin);
-                  }}
-                  className="px-3.5 py-2.5 bg-slate-950 hover:bg-slate-800 border border-slate-800 text-[11px] text-slate-300 rounded-xl font-bold transition whitespace-nowrap"
-                >
-                  Reset to Current
-                </button>
+              </div>
+
+              {/* Target Area */}
+              <div className="space-y-2">
+                <label className="text-xs font-black uppercase tracking-wider text-slate-300">
+                  Target Locality
+                </label>
+                <div className="flex gap-2">
+                  <select
+                    value={selectedArea}
+                    onChange={(e) => {
+                      setSelectedArea(e.target.value);
+                      setCustomArea("");
+                    }}
+                    className="flex-1 bg-slate-950 border border-slate-800 rounded-xl px-3 py-2.5 text-xs text-slate-200 focus:outline-none focus:border-amber-500/60"
+                  >
+                    {areasList.map((a) => (
+                      <option key={a} value={a}>
+                        {a}
+                      </option>
+                    ))}
+                  </select>
+                  <input
+                    type="text"
+                    value={customArea}
+                    onChange={(e) => setCustomArea(e.target.value)}
+                    placeholder="Other..."
+                    className="w-24 bg-slate-950 border border-slate-800 rounded-xl px-2.5 py-2.5 text-xs text-slate-200 focus:outline-none focus:border-amber-500/60"
+                  />
+                </div>
+              </div>
+
+              {/* Minimum Rating Bar Slider */}
+              <div className="space-y-2">
+                <div className="flex items-center justify-between text-xs font-black uppercase tracking-wider text-slate-300">
+                  <span>Rating Bar Filter</span>
+                  <span className="text-amber-400 font-bold flex items-center gap-1 font-sans">
+                    <Star className="w-3.5 h-3.5 fill-amber-400" />
+                    <span>&gt;= {minRating.toFixed(1)} ⭐</span>
+                  </span>
+                </div>
+                <input
+                  type="range"
+                  min="3.8"
+                  max="4.8"
+                  step="0.1"
+                  value={minRating}
+                  onChange={(e) => setMinRating(parseFloat(e.target.value))}
+                  className="w-full accent-amber-400 cursor-pointer h-2 bg-slate-950 rounded-lg"
+                />
+                <div className="flex justify-between text-[10px] text-slate-500 font-mono">
+                  <span>3.8⭐</span>
+                  <span>4.1⭐ (Sweet Spot)</span>
+                  <span>4.8⭐</span>
+                </div>
+              </div>
+
+              {/* Min Review Count */}
+              <div className="space-y-2">
+                <label className="text-xs font-black uppercase tracking-wider text-slate-300">
+                  Minimum Reviews
+                </label>
+                <input
+                  type="number"
+                  min="10"
+                  max="500"
+                  value={minReviews}
+                  onChange={(e) => setMinReviews(parseInt(e.target.value) || 20)}
+                  className="w-full bg-slate-950 border border-slate-800 rounded-xl px-3.5 py-2.5 text-xs text-slate-200 focus:outline-none focus:border-amber-500/60 font-mono"
+                />
+              </div>
+
+              {/* Live Public URL (Vercel / Production Domain) */}
+              <div className="col-span-full pt-2">
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-1.5">
+                  <label className="text-xs font-black uppercase tracking-wider text-slate-300 flex items-center gap-2">
+                    <span>Public Live Domain (Vercel URL for Outreach)</span>
+                    <span className="text-[10px] text-emerald-400 font-bold bg-emerald-500/10 px-2 py-0.5 rounded-full border border-emerald-500/20">
+                      Auto-Detected
+                    </span>
+                  </label>
+                  <span className="text-[11px] text-slate-500">
+                    Links in WhatsApp & Email will use this domain so owners can open on mobile
+                  </span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <input
+                    type="text"
+                    value={publicBaseUrl}
+                    onChange={(e) => setPublicBaseUrl(e.target.value)}
+                    placeholder="https://your-agency.vercel.app"
+                    className="flex-1 bg-slate-950 border border-slate-800 rounded-xl px-4 py-2.5 text-xs text-amber-300 font-mono focus:outline-none focus:border-amber-400"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => {
+                      if (typeof window !== "undefined") setPublicBaseUrl(window.location.origin);
+                    }}
+                    className="px-3.5 py-2.5 bg-slate-950 hover:bg-slate-800 border border-slate-800 text-[11px] text-slate-300 rounded-xl font-bold transition whitespace-nowrap active:scale-95"
+                  >
+                    Reset to Current
+                  </button>
+                </div>
               </div>
             </div>
-          </div>
 
-          {/* Action Row */}
-          <div className="flex flex-col sm:flex-row items-center justify-between gap-4 pt-4 border-t border-slate-800">
-            <div className="flex items-center gap-2 text-xs text-slate-400">
-              <ShieldCheck className="w-4 h-4 text-emerald-400" />
-              <span>Only qualifies places with <b>no official website</b> (Zomato/IG only)</span>
+            {/* Action Row */}
+            <div className="flex flex-col sm:flex-row items-center justify-between gap-4 pt-4 border-t border-slate-800">
+              <div className="flex items-center gap-2 text-xs text-slate-400">
+                <ShieldCheck className="w-4 h-4 text-emerald-400" />
+                <span>Only qualifies places with <b>no official website</b> (Zomato/IG only)</span>
+              </div>
+
+              <MagneticButton strength={0.2} as="div">
+                <button
+                  type="submit"
+                  disabled={isLoading}
+                  className="w-full sm:w-auto px-8 py-3.5 bg-gradient-to-r from-amber-400 to-amber-500 hover:from-amber-300 hover:to-amber-400 text-slate-950 font-black text-xs uppercase tracking-wider rounded-2xl shadow-xl shadow-amber-500/10 transition active:scale-95 disabled:opacity-50 flex items-center justify-center gap-2"
+                >
+                  {isLoading ? (
+                    <>
+                      <RefreshCw className="w-4 h-4 animate-spin" />
+                      <span>Scanning Pune Google Places...</span>
+                    </>
+                  ) : (
+                    <>
+                      <Search className="w-4 h-4" />
+                      <span>Scan {customArea.trim() || selectedArea} & Generate Demos</span>
+                    </>
+                  )}
+                </button>
+              </MagneticButton>
             </div>
-
-            <button
-              type="submit"
-              disabled={isLoading}
-              className="w-full sm:w-auto px-8 py-3.5 bg-gradient-to-r from-amber-400 to-amber-500 hover:from-amber-300 hover:to-amber-400 text-slate-950 font-black text-xs uppercase tracking-wider rounded-2xl shadow-xl shadow-amber-500/10 transition active:scale-95 disabled:opacity-50 flex items-center justify-center gap-2"
-            >
-              {isLoading ? (
-                <>
-                  <RefreshCw className="w-4 h-4 animate-spin" />
-                  <span>Scanning Pune Google Places...</span>
-                </>
-              ) : (
-                <>
-                  <Search className="w-4 h-4" />
-                  <span>Scan {customArea.trim() || selectedArea} & Generate Demos</span>
-                </>
-              )}
-            </button>
-          </div>
-        </form>
+          </form>
+        </FadeIn>
 
         {/* Error notification */}
         {errorMsg && (
-          <div className="p-4 rounded-2xl bg-red-950/50 border border-red-800/80 text-red-200 text-xs flex items-center gap-3">
-            <AlertCircle className="w-4 h-4 text-red-400 shrink-0" />
-            <span>{errorMsg}</span>
-          </div>
+          <FadeIn direction="up">
+            <div className="p-4 rounded-2xl bg-red-950/50 border border-red-800/80 text-red-200 text-xs flex items-center gap-3">
+              <AlertCircle className="w-4 h-4 text-red-400 shrink-0" />
+              <span>{errorMsg}</span>
+            </div>
+          </FadeIn>
         )}
 
         {/* 2. Discovered Leads Pipeline Section */}
@@ -369,7 +384,7 @@ export default function AgencyCommanderPage() {
             </div>
           </div>
 
-          {/* Cards Grid */}
+          {/* Cards Grid with StaggerChildren */}
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {leads.length === 0 ? (
               // Empty State with instant demo cards
@@ -385,245 +400,257 @@ export default function AgencyCommanderPage() {
                 </div>
                 <button
                   onClick={handleScan}
-                  className="px-5 py-2.5 bg-slate-900 hover:bg-slate-800 border border-slate-700 text-amber-400 text-xs font-bold rounded-xl transition"
+                  className="px-5 py-2.5 bg-slate-900 hover:bg-slate-800 border border-slate-700 text-amber-400 text-xs font-bold rounded-xl transition active:scale-95"
                 >
                   Run Fast Baner Test Scan
                 </button>
               </div>
             ) : (
-              leads.map((lead) => (
-                <div
-                  key={lead.id}
-                  className="bg-slate-900/80 border border-slate-800 hover:border-amber-500/50 rounded-3xl p-6 shadow-xl space-y-5 transition duration-300 flex flex-col justify-between"
-                >
-                  <div className="space-y-3">
-                    {/* Top Row: Name & Rating */}
-                    <div className="flex items-start justify-between gap-3">
-                      <div>
-                        <h3 className="font-serif font-black text-lg text-white leading-tight">
-                          {lead.name}
-                        </h3>
-                        <span className="text-[11px] font-bold text-amber-400/90 block mt-0.5">
-                          📍 {lead.area}, Pune
-                        </span>
-                      </div>
-                      <div className="flex items-center gap-1 px-2.5 py-1 rounded-xl bg-amber-400/10 border border-amber-400/30 text-amber-400 text-xs font-black shrink-0">
-                        <Star className="w-3.5 h-3.5 fill-amber-400" />
-                        <span>{lead.rating}</span>
-                        <span className="text-[10px] text-slate-400">({lead.reviews})</span>
-                      </div>
-                    </div>
-
-                    {/* Address & Phone */}
-                    <p className="text-xs text-slate-400 line-clamp-2 leading-relaxed">
-                      {lead.address}
-                    </p>
-
-                    <div className="flex items-center justify-between text-xs pt-1 text-slate-300 font-mono">
-                      <span>📞 {lead.phone}</span>
-                      <a
-                        href={lead.mapsUrl}
-                        target="_blank"
-                        rel="noreferrer"
-                        className="text-amber-400 hover:underline flex items-center gap-1 font-sans text-[11px]"
-                      >
-                        <span>Google Maps</span>
-                        <ExternalLink className="w-3 h-3" />
-                      </a>
-                    </div>
-
-                    {/* Deal Scenario Selector */}
-                    <div className="pt-2 border-t border-slate-800/80 space-y-1.5">
-                      <label className="text-[10px] font-black uppercase tracking-wider text-slate-400 block">
-                        Select Pitch Package:
-                      </label>
-                      <select
-                        value={lead.dealScenario}
-                        onChange={(e) => {
-                          const val = e.target.value as any;
-                          setLeads((prev) =>
-                            prev.map((item) =>
-                              item.id === lead.id ? { ...item, dealScenario: val } : item
-                            )
-                          );
-                        }}
-                        className="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-xs text-amber-300 font-bold focus:outline-none"
-                      >
-                        <option value="tier1">Tier 1: Starter Presence (₹2,999 - Setup Support + Free Vercel Deploy)</option>
-                        <option value="tier2">Tier 2: Managed Care (₹4,999 / 1 Year - Custom Design + Hosting + Changes)</option>
-                      </select>
-                    </div>
-                  </div>
-
-                  {/* Action Buttons Row */}
-                  <div className="space-y-2 pt-4 border-t border-slate-800">
-                    <a
-                      href={lead.demoUrl}
-                      target="_blank"
-                      rel="noreferrer"
-                      className="w-full py-2.5 bg-amber-400 hover:bg-amber-300 text-slate-950 font-black text-xs uppercase tracking-wider rounded-xl transition flex items-center justify-center gap-1.5 shadow-md"
+              <StaggerChildren staggerDelay={0.07} className="contents">
+                {leads.map((lead) => (
+                  <StaggerItem key={lead.id}>
+                    <div
+                      className="h-full bg-slate-900/80 border border-slate-800 hover:border-amber-500/50 rounded-3xl p-6 shadow-xl space-y-5 transition duration-300 flex flex-col justify-between hover:-translate-y-1"
                     >
-                      <span>Open Live Demo</span>
-                      <ExternalLink className="w-3.5 h-3.5" />
-                    </a>
+                      <div className="space-y-3">
+                        {/* Top Row: Name & Rating */}
+                        <div className="flex items-start justify-between gap-3">
+                          <div>
+                            <h3 className="font-serif font-black text-lg text-white leading-tight">
+                              {lead.name}
+                            </h3>
+                            <span className="text-[11px] font-bold text-amber-400/90 block mt-0.5">
+                              📍 {lead.area}, Pune
+                            </span>
+                          </div>
+                          <div className="flex items-center gap-1 px-2.5 py-1 rounded-xl bg-amber-400/10 border border-amber-400/30 text-amber-400 text-xs font-black shrink-0">
+                            <Star className="w-3.5 h-3.5 fill-amber-400" />
+                            <span>{lead.rating}</span>
+                            <span className="text-[10px] text-slate-400">({lead.reviews})</span>
+                          </div>
+                        </div>
 
-                    <div className="grid grid-cols-2 gap-2">
-                      <button
-                        onClick={() => openOutreachModal(lead, "whatsapp")}
-                        className="py-2 px-3 rounded-xl bg-emerald-950/60 hover:bg-emerald-900 border border-emerald-700/60 text-emerald-300 font-bold text-xs flex items-center justify-center gap-1.5 transition"
-                      >
-                        <MessageCircle className="w-3.5 h-3.5" />
-                        <span>WhatsApp</span>
-                      </button>
+                        {/* Address & Phone */}
+                        <p className="text-xs text-slate-400 line-clamp-2 leading-relaxed">
+                          {lead.address}
+                        </p>
 
-                      <button
-                        onClick={() => openOutreachModal(lead, "email")}
-                        className="py-2 px-3 rounded-xl bg-slate-950 hover:bg-slate-800 border border-slate-700 text-slate-300 font-bold text-xs flex items-center justify-center gap-1.5 transition"
-                      >
-                        <Mail className="w-3.5 h-3.5" />
-                        <span>Mail Draft</span>
-                      </button>
+                        <div className="flex items-center justify-between text-xs pt-1 text-slate-300 font-mono">
+                          <span>📞 {lead.phone}</span>
+                          <a
+                            href={lead.mapsUrl}
+                            target="_blank"
+                            rel="noreferrer"
+                            className="text-amber-400 hover:underline flex items-center gap-1 font-sans text-[11px]"
+                          >
+                            <span>Google Maps</span>
+                            <ExternalLink className="w-3 h-3" />
+                          </a>
+                        </div>
+
+                        {/* Deal Scenario Selector */}
+                        <div className="pt-2 border-t border-slate-800/80 space-y-1.5">
+                          <label className="text-[10px] font-black uppercase tracking-wider text-slate-400 block">
+                            Select Pitch Package:
+                          </label>
+                          <select
+                            value={lead.dealScenario}
+                            onChange={(e) => {
+                              const val = e.target.value as any;
+                              setLeads((prev) =>
+                                prev.map((item) =>
+                                  item.id === lead.id ? { ...item, dealScenario: val } : item
+                                )
+                              );
+                            }}
+                            className="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-xs text-amber-300 font-bold focus:outline-none"
+                          >
+                            <option value="tier1">Tier 1: Starter Presence (₹2,999 - Setup Support + Free Vercel Deploy)</option>
+                            <option value="tier2">Tier 2: Managed Care (₹4,999 / 1 Year - Custom Design + Hosting + Changes)</option>
+                          </select>
+                        </div>
+                      </div>
+
+                      {/* Action Buttons Row */}
+                      <div className="space-y-2 pt-4 border-t border-slate-800">
+                        <a
+                          href={lead.demoUrl}
+                          target="_blank"
+                          rel="noreferrer"
+                          className="w-full py-2.5 bg-amber-400 hover:bg-amber-300 text-slate-950 font-black text-xs uppercase tracking-wider rounded-xl transition flex items-center justify-center gap-1.5 shadow-md active:scale-95"
+                        >
+                          <span>Open Live Demo</span>
+                          <ExternalLink className="w-3.5 h-3.5" />
+                        </a>
+
+                        <div className="grid grid-cols-2 gap-2">
+                          <button
+                            onClick={() => openOutreachModal(lead, "whatsapp")}
+                            className="py-2 px-3 rounded-xl bg-emerald-950/60 hover:bg-emerald-900 border border-emerald-700/60 text-emerald-300 font-bold text-xs flex items-center justify-center gap-1.5 transition active:scale-95"
+                          >
+                            <MessageCircle className="w-3.5 h-3.5" />
+                            <span>WhatsApp</span>
+                          </button>
+
+                          <button
+                            onClick={() => openOutreachModal(lead, "email")}
+                            className="py-2 px-3 rounded-xl bg-slate-950 hover:bg-slate-800 border border-slate-700 text-slate-300 font-bold text-xs flex items-center justify-center gap-1.5 transition active:scale-95"
+                          >
+                            <Mail className="w-3.5 h-3.5" />
+                            <span>Mail Draft</span>
+                          </button>
+                        </div>
+                      </div>
                     </div>
-                  </div>
-                </div>
-              ))
+                  </StaggerItem>
+                ))}
+              </StaggerChildren>
             )}
           </div>
         </div>
       </main>
 
-      {/* 3. Outreach Modal (WhatsApp / Email Pitch Customizer) */}
-      {activeLead && (
-        <div
-          onClick={() => setActiveLead(null)}
-          className="fixed inset-0 z-50 bg-black/90 backdrop-blur-md flex items-center justify-center p-4 sm:p-6"
-        >
-          <div
-            onClick={(e) => e.stopPropagation()}
-            className="max-w-2xl w-full bg-slate-900 border border-slate-800 rounded-3xl p-6 sm:p-8 space-y-6 shadow-2xl relative"
+      {/* 3. Outreach Modal with Spring Physics */}
+      <AnimatePresence>
+        {activeLead && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            onClick={() => setActiveLead(null)}
+            className="fixed inset-0 z-50 bg-black/90 backdrop-blur-md flex items-center justify-center p-4 sm:p-6"
           >
-            {/* Modal Header */}
-            <div className="flex items-start justify-between gap-4">
-              <div>
-                <span className="text-[10px] font-black uppercase tracking-wider text-amber-400">
-                  Outreach Pitch Composer
-                </span>
-                <h3 className="text-xl sm:text-2xl font-serif font-black text-white">
-                  Pitch for {activeLead.name}
-                </h3>
-                <p className="text-xs text-slate-400 mt-0.5">
-                  Target: <b>{activeLead.phone}</b> ({activeLead.area}, Pune)
-                </p>
+            <motion.div
+              initial={{ opacity: 0, scale: 0.95, y: 20 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.95, y: 20 }}
+              transition={{ type: "spring", stiffness: 350, damping: 25 }}
+              onClick={(e) => e.stopPropagation()}
+              className="max-w-2xl w-full bg-slate-900 border border-slate-800 rounded-3xl p-6 sm:p-8 space-y-6 shadow-2xl relative"
+            >
+              {/* Modal Header */}
+              <div className="flex items-start justify-between gap-4">
+                <div>
+                  <span className="text-[10px] font-black uppercase tracking-wider text-amber-400">
+                    Outreach Pitch Composer
+                  </span>
+                  <h3 className="text-xl sm:text-2xl font-serif font-black text-white">
+                    Pitch for {activeLead.name}
+                  </h3>
+                  <p className="text-xs text-slate-400 mt-0.5">
+                    Target: <b>{activeLead.phone}</b> ({activeLead.area}, Pune)
+                  </p>
+                </div>
+
+                {/* Channel Selector */}
+                <div className="flex items-center gap-1 p-1 rounded-xl bg-slate-950 border border-slate-800">
+                  <button
+                    onClick={() => {
+                      setPitchChannel("whatsapp");
+                      setEditablePitch(activeLead.whatsappPitch);
+                    }}
+                    className={`px-3 py-1.5 rounded-lg text-xs font-bold transition flex items-center gap-1.5 ${
+                      pitchChannel === "whatsapp"
+                        ? "bg-emerald-500 text-slate-950 font-black shadow-sm"
+                        : "text-slate-400 hover:text-white"
+                    }`}
+                  >
+                    <MessageCircle className="w-3.5 h-3.5" />
+                    <span>WhatsApp</span>
+                  </button>
+                  <button
+                    onClick={() => {
+                      setPitchChannel("email");
+                      setEditablePitch(activeLead.emailPitch);
+                      setEditableSubject(activeLead.emailSubject);
+                    }}
+                    className={`px-3 py-1.5 rounded-lg text-xs font-bold transition flex items-center gap-1.5 ${
+                      pitchChannel === "email"
+                        ? "bg-amber-400 text-slate-950 font-black shadow-sm"
+                        : "text-slate-400 hover:text-white"
+                    }`}
+                  >
+                    <Mail className="w-3.5 h-3.5" />
+                    <span>Email</span>
+                  </button>
+                </div>
               </div>
 
-              {/* Channel Selector */}
-              <div className="flex items-center gap-1 p-1 rounded-xl bg-slate-950 border border-slate-800">
-                <button
-                  onClick={() => {
-                    setPitchChannel("whatsapp");
-                    setEditablePitch(activeLead.whatsappPitch);
-                  }}
-                  className={`px-3 py-1.5 rounded-lg text-xs font-bold transition flex items-center gap-1.5 ${
-                    pitchChannel === "whatsapp"
-                      ? "bg-emerald-500 text-slate-950 font-black shadow-sm"
-                      : "text-slate-400 hover:text-white"
-                  }`}
-                >
-                  <MessageCircle className="w-3.5 h-3.5" />
-                  <span>WhatsApp</span>
-                </button>
-                <button
-                  onClick={() => {
-                    setPitchChannel("email");
-                    setEditablePitch(activeLead.emailPitch);
-                    setEditableSubject(activeLead.emailSubject);
-                  }}
-                  className={`px-3 py-1.5 rounded-lg text-xs font-bold transition flex items-center gap-1.5 ${
-                    pitchChannel === "email"
-                      ? "bg-amber-400 text-slate-950 font-black shadow-sm"
-                      : "text-slate-400 hover:text-white"
-                  }`}
-                >
-                  <Mail className="w-3.5 h-3.5" />
-                  <span>Email</span>
-                </button>
-              </div>
-            </div>
+              {/* Email Subject Field (if email channel selected) */}
+              {pitchChannel === "email" && (
+                <div className="space-y-1.5">
+                  <label className="text-xs font-black uppercase tracking-wider text-slate-400">
+                    Email Subject Line
+                  </label>
+                  <input
+                    type="text"
+                    value={editableSubject}
+                    onChange={(e) => setEditableSubject(e.target.value)}
+                    className="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-2.5 text-xs text-white focus:outline-none focus:border-amber-400 font-medium"
+                  />
+                </div>
+              )}
 
-            {/* Email Subject Field (if email channel selected) */}
-            {pitchChannel === "email" && (
+              {/* Pitch Body Editor */}
               <div className="space-y-1.5">
-                <label className="text-xs font-black uppercase tracking-wider text-slate-400">
-                  Email Subject Line
-                </label>
-                <input
-                  type="text"
-                  value={editableSubject}
-                  onChange={(e) => setEditableSubject(e.target.value)}
-                  className="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-2.5 text-xs text-white focus:outline-none focus:border-amber-400 font-medium"
+                <div className="flex items-center justify-between text-xs font-black uppercase tracking-wider text-slate-400">
+                  <span>Personalized Pitch Message</span>
+                  <span className="text-[10px] text-amber-400 lowercase font-mono">Editable</span>
+                </div>
+                <textarea
+                  rows={10}
+                  value={editablePitch}
+                  onChange={(e) => setEditablePitch(e.target.value)}
+                  className="w-full bg-slate-950 border border-slate-800 rounded-2xl p-4 text-xs text-slate-200 focus:outline-none focus:border-amber-400 font-sans leading-relaxed resize-none"
                 />
               </div>
-            )}
 
-            {/* Pitch Body Editor */}
-            <div className="space-y-1.5">
-              <div className="flex items-center justify-between text-xs font-black uppercase tracking-wider text-slate-400">
-                <span>Personalized Pitch Message</span>
-                <span className="text-[10px] text-amber-400 lowercase font-mono">Editable</span>
-              </div>
-              <textarea
-                rows={10}
-                value={editablePitch}
-                onChange={(e) => setEditablePitch(e.target.value)}
-                className="w-full bg-slate-950 border border-slate-800 rounded-2xl p-4 text-xs text-slate-200 focus:outline-none focus:border-amber-400 font-sans leading-relaxed resize-none"
-              />
-            </div>
-
-            {/* Footer Buttons */}
-            <div className="flex flex-col sm:flex-row items-center justify-between gap-3 pt-2">
-              <button
-                onClick={handleCopyPitch}
-                className="w-full sm:w-auto px-5 py-2.5 rounded-xl bg-slate-950 hover:bg-slate-800 border border-slate-700 text-slate-200 text-xs font-bold flex items-center justify-center gap-2 transition"
-              >
-                {copiedState ? (
-                  <>
-                    <Check className="w-4 h-4 text-emerald-400" />
-                    <span>Copied to Clipboard!</span>
-                  </>
-                ) : (
-                  <>
-                    <Copy className="w-4 h-4" />
-                    <span>Copy Text</span>
-                  </>
-                )}
-              </button>
-
-              <div className="flex items-center gap-2 w-full sm:w-auto">
+              {/* Footer Buttons */}
+              <div className="flex flex-col sm:flex-row items-center justify-between gap-3 pt-2">
                 <button
-                  onClick={() => setActiveLead(null)}
-                  className="px-4 py-2.5 rounded-xl text-slate-400 hover:text-white text-xs font-bold transition"
+                  onClick={handleCopyPitch}
+                  className="w-full sm:w-auto px-5 py-2.5 rounded-xl bg-slate-950 hover:bg-slate-800 border border-slate-700 text-slate-200 text-xs font-bold flex items-center justify-center gap-2 transition active:scale-95"
                 >
-                  Close
+                  {copiedState ? (
+                    <>
+                      <Check className="w-4 h-4 text-emerald-400" />
+                      <span>Copied to Clipboard!</span>
+                    </>
+                  ) : (
+                    <>
+                      <Copy className="w-4 h-4" />
+                      <span>Copy Text</span>
+                    </>
+                  )}
                 </button>
 
-                <button
-                  onClick={handleSendViaChannel}
-                  className={`flex-1 sm:flex-initial px-6 py-2.5 rounded-xl font-black text-xs uppercase tracking-wider flex items-center justify-center gap-2 transition shadow-lg ${
-                    pitchChannel === "whatsapp"
-                      ? "bg-emerald-500 hover:bg-emerald-400 text-slate-950"
-                      : "bg-amber-400 hover:bg-amber-300 text-slate-950"
-                  }`}
-                >
-                  <Send className="w-3.5 h-3.5" />
-                  <span>
-                    {pitchChannel === "whatsapp" ? "Open in WhatsApp Web" : "Open in Mail App"}
-                  </span>
-                </button>
+                <div className="flex items-center gap-2 w-full sm:w-auto">
+                  <button
+                    onClick={() => setActiveLead(null)}
+                    className="px-4 py-2.5 rounded-xl text-slate-400 hover:text-white text-xs font-bold transition active:scale-95"
+                  >
+                    Close
+                  </button>
+
+                  <button
+                    onClick={handleSendViaChannel}
+                    className={`flex-1 sm:flex-initial px-6 py-2.5 rounded-xl font-black text-xs uppercase tracking-wider flex items-center justify-center gap-2 transition shadow-lg active:scale-95 ${
+                      pitchChannel === "whatsapp"
+                        ? "bg-emerald-500 hover:bg-emerald-400 text-slate-950"
+                        : "bg-amber-400 hover:bg-amber-300 text-slate-950"
+                    }`}
+                  >
+                    <Send className="w-3.5 h-3.5" />
+                    <span>
+                      {pitchChannel === "whatsapp" ? "Open in WhatsApp Web" : "Open in Mail App"}
+                    </span>
+                  </button>
+                </div>
               </div>
-            </div>
-          </div>
-        </div>
-      )}
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 }
