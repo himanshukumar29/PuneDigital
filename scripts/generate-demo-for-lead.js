@@ -9,8 +9,15 @@
 const fs = require('fs');
 const path = require('path');
 
-const apiKey = process.env.GOOGLE_PLACES_API_KEY || "AIzaSyDLnh-VwgBMRoDiz0gvaHD9UvIv8zoXcbA";
+const apiKey = process.env.GOOGLE_PLACES_API_KEY || process.argv[3] || "";
 const query = process.argv[2] || "Artizen - Cafe | Art | Studio Pashan Baner Pune";
+
+if (!apiKey) {
+  console.error("❌ Error: Google Places API Key required.");
+  console.error("   Provide GOOGLE_PLACES_API_KEY environment variable or pass as 2nd arg:");
+  console.error("   node scripts/generate-demo-for-lead.js \"Restaurant Name\" YOUR_API_KEY\n");
+  process.exit(1);
+}
 
 async function generateDemo() {
   console.log(`\n🔍 Searching Google Places for: "${query}"...`);

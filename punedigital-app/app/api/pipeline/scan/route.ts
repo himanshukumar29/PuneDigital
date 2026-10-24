@@ -15,7 +15,17 @@ export async function POST(request: NextRequest) {
     const apiKey =
       customKey?.trim() ||
       process.env.GOOGLE_PLACES_API_KEY ||
-      "AIzaSyDLnh-VwgBMRoDiz0gvaHD9UvIv8zoXcbA";
+      "";
+
+    if (!apiKey) {
+      return NextResponse.json({
+        ok: false,
+        error: "Google Places API Key is required. Please provide it in the Commander panel or configure GOOGLE_PLACES_API_KEY in your environment.",
+        totalScanned: 0,
+        qualifiedCount: 0,
+        leads: [],
+      }, { status: 400 });
+    }
 
     const query = `${keyword} in ${area} Pune`;
     const searchUrl = "https://places.googleapis.com/v1/places:searchText";

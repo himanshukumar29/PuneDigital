@@ -29,7 +29,7 @@ git push -u origin main
    - **Framework Preset**: Next.js (automatically detected)
    - **Root Directory**: Click **Edit** and choose `punedigital-app` (⚠️ **Important**)
 4. Expand **Environment Variables** and add:
-   - `GOOGLE_PLACES_API_KEY` = `AIzaSyDLnh-VwgBMRoDiz0gvaHD9UvIv8zoXcbA` (or your personal key)
+   - `GOOGLE_PLACES_API_KEY` = `your_google_places_api_key_here` (from Google Cloud Console)
    - `NEXT_PUBLIC_BASE_URL` = `https://<YOUR-PROJECT-NAME>.vercel.app` (leave blank initially or set to your Vercel URL)
    - `AGENCY_SECRET_PASSCODE` = `your_secret_password_here` (Optional)
      - **If left blank**: The Commander Panel (`/agency`) is **100% blocked and returns 404 Not Found** on Vercel to everyone (including clients). You can run it solely on your local PC.

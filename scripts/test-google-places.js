@@ -7,7 +7,7 @@ const apiKey = process.argv[2] || process.env.GOOGLE_PLACES_API_KEY;
 
 if (!apiKey || apiKey.includes("your_")) {
   console.error("❌ Please provide a Google Places API key:");
-  console.error("   node scripts/test-google-places.js AIzaSy...");
+  console.error("   node scripts/test-google-places.js YOUR_API_KEY");
   process.exit(1);
 }
 

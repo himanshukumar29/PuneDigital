@@ -39,7 +39,7 @@ interface Lead {
 }
 
 export default function AgencyCommanderPage() {
-  const [apiKey, setApiKey] = useState("AIzaSyDLnh-VwgBMRoDiz0gvaHD9UvIv8zoXcbA");
+  const [apiKey, setApiKey] = useState("");
   const [selectedArea, setSelectedArea] = useState("Baner");
   const [customArea, setCustomArea] = useState("");
   const [keyword, setKeyword] = useState("cafe");
@@ -217,13 +217,13 @@ export default function AgencyCommanderPage() {
               <div className="space-y-2">
                 <label className="text-xs font-black uppercase tracking-wider text-slate-300 flex items-center justify-between">
                   <span>Google Places API Key</span>
-                  <span className="text-[10px] text-amber-400 font-normal">Active</span>
+                  <span className="text-[10px] text-amber-400 font-normal">{apiKey ? "Custom Key Active" : "Using Env / Live Scraper"}</span>
                 </label>
                 <input
                   type="text"
                   value={apiKey}
                   onChange={(e) => setApiKey(e.target.value)}
-                  placeholder="AIzaSy..."
+                  placeholder="Enter Google Places API Key (or configure in .env)"
                   className="w-full bg-slate-950 border border-slate-800 rounded-xl px-3.5 py-2.5 text-xs text-slate-200 focus:outline-none focus:border-amber-500/60 font-mono"
                 />
               </div>

@@ -12,7 +12,14 @@ const path = require('path');
 const area = process.argv[2] || "Baner";
 const minRating = parseFloat(process.argv[3]) || 4.1;
 const minReviews = parseInt(process.argv[4]) || 30;
-const apiKey = process.env.GOOGLE_PLACES_API_KEY || "AIzaSyDLnh-VwgBMRoDiz0gvaHD9UvIv8zoXcbA";
+const apiKey = process.env.GOOGLE_PLACES_API_KEY || process.argv[5] || "";
+
+if (!apiKey) {
+  console.error("❌ Error: Google Places API Key required.");
+  console.error("   Provide GOOGLE_PLACES_API_KEY environment variable or pass as 4th arg:");
+  console.error("   node scripts/run-local-scan.js \"Baner\" 4.1 30 YOUR_API_KEY\n");
+  process.exit(1);
+}
 
 async function runLocalScan() {
   console.log(`\n======================================================`);

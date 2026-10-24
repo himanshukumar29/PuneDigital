@@ -58,13 +58,13 @@ export async function GET(request: NextRequest) {
 
   const fallbackPhotos = getFallbackPhotosForTheme(theme);
 
-  // Read environment variable or fallback to verified key
-  const apiKey = userKey || process.env.GOOGLE_PLACES_API_KEY || "AIzaSyDLnh-VwgBMRoDiz0gvaHD9UvIv8zoXcbA";
+  // Read environment variable or user query param
+  const apiKey = userKey || process.env.GOOGLE_PLACES_API_KEY || "";
 
   try {
     let placeData: any = null;
 
-    if (placeId) {
+    if (placeId && apiKey) {
       // 1. Direct Place Details endpoint
       const detailUrl = `https://places.googleapis.com/v1/places/${placeId}`;
       const res = await fetch(detailUrl, {
@@ -78,7 +78,7 @@ export async function GET(request: NextRequest) {
       }
     }
 
-    if (!placeData) {
+    if (!placeData && apiKey) {
       // 2. Text Search endpoint
       const searchUrl = "https://places.googleapis.com/v1/places:searchText";
       const res = await fetch(searchUrl, {
