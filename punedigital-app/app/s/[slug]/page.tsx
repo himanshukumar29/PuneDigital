@@ -220,12 +220,21 @@ export default function DemoRestaurantPage({ params }: { params: { slug: string 
   const [config, setConfig] = useState<any>(null);
 
   useEffect(() => {
+    const searchParams = typeof window !== "undefined" ? new URLSearchParams(window.location.search) : null;
+    const queryName = searchParams?.get("name");
+    const queryArea = searchParams?.get("area");
+    const placeId = searchParams?.get("placeId");
+
     const raw = MOCK_RESTAURANTS[params.slug] || MOCK_RESTAURANTS["artizen-cafe-baner"] || MOCK_RESTAURANTS["default"];
+    const restaurantName = queryName || (raw.slug === params.slug ? raw.restaurant.name : params.slug.split("-").map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(" "));
+    const restaurantArea = queryArea || raw.restaurant.area || "Baner, Pune";
+
     const formatted = {
       ...raw,
       restaurant: {
         ...raw.restaurant,
-        name: raw.slug === params.slug ? raw.restaurant.name : params.slug.split("-").map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(" ")
+        name: restaurantName,
+        area: restaurantArea,
       }
     };
     setConfig(formatted);
@@ -234,9 +243,11 @@ export default function DemoRestaurantPage({ params }: { params: { slug: string 
     }
 
     // Background live Google Places sync for real metadata & photos
-    const searchQuery = formatted.restaurant.name + " " + (formatted.restaurant.area || "Pune");
+    const searchQuery = `${restaurantName} ${restaurantArea}`;
     const themeParam = formatted.theme?.archetype_id || "artisanal-cafe";
-    fetch(`/api/places/live?query=${encodeURIComponent(searchQuery)}&theme=${encodeURIComponent(themeParam)}`)
+    const endpoint = `/api/places/live?query=${encodeURIComponent(searchQuery)}&theme=${encodeURIComponent(themeParam)}${placeId ? `&placeId=${encodeURIComponent(placeId)}` : ''}`;
+
+    fetch(endpoint)
       .then(res => res.json())
       .then(result => {
         if (result?.ok && result.data) {

@@ -5,8 +5,10 @@ import Link from "next/link";
 import { 
   Search, Sliders, Star, Phone, MapPin, ExternalLink, MessageCircle, 
   Mail, Copy, Check, Sparkles, Utensils, RefreshCw, Zap, ShieldCheck, 
-  TrendingUp, Send, CheckCircle2, AlertCircle, ArrowRight
+  TrendingUp, Send, CheckCircle2, AlertCircle, ArrowRight, Camera
 } from "lucide-react";
+import { SafeImage } from "@/components/safe-image";
+import { getHeroFallback } from "@/lib/fallback-images";
 import { CustomCursor } from "@/components/custom-cursor";
 import { AnimatedBackground } from "@/components/animated-background";
 import { AestheticFX } from "@/components/aesthetic-fx";
@@ -30,6 +32,10 @@ interface Lead {
   reviews: number;
   websiteUri: string | null;
   mapsUrl: string;
+  heroImage?: string;
+  photoUrl?: string;
+  photos?: string[];
+  hasGooglePhotos?: boolean;
   photosCount: number;
   demoUrl: string;
   dealScenario: "tier1" | "tier2";
@@ -418,9 +424,28 @@ export default function AgencyCommanderPage() {
                 {leads.map((lead) => (
                   <StaggerItem key={lead.id}>
                     <div
-                      className="h-full bg-slate-900/80 border border-slate-800 hover:border-amber-500/50 rounded-3xl p-6 shadow-xl space-y-5 transition duration-300 flex flex-col justify-between hover:-translate-y-1"
+                      className="h-full bg-slate-900/80 border border-slate-800 hover:border-amber-500/50 rounded-3xl p-5 sm:p-6 shadow-xl space-y-4 transition duration-300 flex flex-col justify-between hover:-translate-y-1 group"
                     >
-                      <div className="space-y-3">
+                      <div className="space-y-4">
+                        {/* Cafe Photography Preview */}
+                        <div className="relative aspect-[16/9] w-full rounded-2xl overflow-hidden bg-slate-950 border border-slate-800 shadow-inner">
+                          <SafeImage
+                            src={lead.heroImage || lead.photoUrl}
+                            fallbackSrc={getHeroFallback("artisanal-cafe")}
+                            theme="artisanal-cafe"
+                            alt={lead.name}
+                            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                          />
+                          {/* Photo Origin Badge */}
+                          <div className="absolute top-2.5 left-2.5 flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-slate-950/85 backdrop-blur-md border border-white/10 text-[10px] font-bold text-amber-300 shadow-md">
+                            <Camera className="w-3 h-3 text-amber-400" />
+                            <span>{lead.hasGooglePhotos ? "Google Maps Photo" : "Verified Cafe Ambience"}</span>
+                          </div>
+                          <div className="absolute bottom-2.5 right-2.5 px-2.5 py-0.5 rounded-lg bg-black/80 backdrop-blur-sm text-[10px] text-slate-300 font-mono shadow-md border border-white/5">
+                            {lead.photosCount || 6}+ Photos Ready
+                          </div>
+                        </div>
+
                         {/* Top Row: Name & Rating */}
                         <div className="flex items-start justify-between gap-3">
                           <div>

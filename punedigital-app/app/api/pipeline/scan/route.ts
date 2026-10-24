@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
+import { getFallbackPhotosForTheme } from "@/lib/fallback-images";
 
 export async function POST(request: NextRequest) {
   try {
@@ -54,6 +55,7 @@ export async function POST(request: NextRequest) {
 
     const data = await res.json();
     const rawPlaces = data.places || [];
+    console.log(`[Google Places Scan] Found ${rawPlaces.length} places. Sample place photos:`, rawPlaces[0]?.photos);
 
     const qualifiedLeads: any[] = [];
 
@@ -83,7 +85,24 @@ export async function POST(request: NextRequest) {
         const formattedPhone = cleanPhone.length === 10 ? `91${cleanPhone}` : cleanPhone;
 
         const baseUrl = (publicBaseUrl || process.env.NEXT_PUBLIC_BASE_URL || "http://localhost:3000").replace(/\/$/, "");
-        const demoUrl = `${baseUrl}/s/${slug}`;
+        const demoUrl = `${baseUrl}/s/${slug}?name=${encodeURIComponent(name)}&area=${encodeURIComponent(area)}`;
+
+        // Guarantee high-definition cafe photos (from Google Places API or curated cafe aesthetic collection)
+        const fallbackPhotos = getFallbackPhotosForTheme("artisanal-cafe");
+        const fallbackHero = fallbackPhotos[qualifiedLeads.length % fallbackPhotos.length].url;
+        const hasGooglePhotos = Array.isArray(p.photos) && p.photos.length > 0;
+
+        let heroImage = fallbackHero;
+        let photosArray: string[] = [];
+
+        if (hasGooglePhotos && apiKey) {
+          heroImage = `https://places.googleapis.com/v1/${p.photos[0].name}/media?maxHeightPx=800&maxWidthPx=1200&key=${apiKey}`;
+          photosArray = p.photos.slice(0, 6).map((ph: any) =>
+            `https://places.googleapis.com/v1/${ph.name}/media?maxHeightPx=800&maxWidthPx=1200&key=${apiKey}`
+          );
+        } else {
+          photosArray = fallbackPhotos.map((f: any) => f.url);
+        }
 
         // Default Pitch Drafts
         const whatsappPitch = `Hi ${name} team! 👋\n\nSaw your stellar ${rating}⭐ rating with ${reviews.toLocaleString()}+ reviews in ${area} — huge congratulations on the Pune foodie love!\n\nWe noticed you don't have an official direct website and customers searching on Google Maps often can't view your verified menu or official photos.\n\nWe built an exclusive digital prototype for ${name} using your authentic photos & reviews:\n👉 ${demoUrl}\n\n✨ Two clear options:\n- Tier 1 (₹2,999 one-time): Free Vercel cloud deploy (₹0 hosting fees), initial setup support & custom domain connection (domain as per charge).\n- Tier 2 (₹4,999 / year): Bespoke custom brand design + 1 full year managed cloud hosting, domain serving & ongoing menu/price changes.\n\nReply YES if you'd like to claim your website for ${name}!\n\nWarmly,\nPuneDigital Team`;
@@ -103,7 +122,11 @@ export async function POST(request: NextRequest) {
           reviews,
           websiteUri: p.websiteUri || null,
           mapsUrl: p.googleMapsUri || `https://maps.google.com/?q=${encodeURIComponent(name)}`,
-          photosCount: (p.photos || []).length,
+          heroImage,
+          photoUrl: heroImage,
+          photos: photosArray,
+          hasGooglePhotos,
+          photosCount: hasGooglePhotos ? p.photos.length : photosArray.length,
           demoUrl,
           dealScenario: "tier2", // default recommendation
           whatsappPitch,
