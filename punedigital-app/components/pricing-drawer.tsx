@@ -2,8 +2,8 @@
 
 import React, { useState } from "react";
 import { 
-  X, Check, Zap, PhoneCall, MessageSquare, Sparkles, 
-  Mail, Copy, CheckCircle2, Phone, ShieldCheck, ArrowRight
+  X, Check, Zap, MessageSquare, Sparkles, 
+  Mail, Copy, CheckCircle2, ShieldCheck, ArrowRight
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { AGENCY_CONFIG, getClaimWhatsAppUrl, getClaimEmailUrl } from "@/lib/agency-config";
@@ -32,7 +32,7 @@ export function PricingDrawer({
   const [copied, setCopied] = useState(false);
 
   const copyContactDetails = () => {
-    const details = `PuneDigital Agency Contact:\nPhone: ${AGENCY_CONFIG.phone}\nWhatsApp: ${AGENCY_CONFIG.whatsapp}\nEmail: ${AGENCY_CONFIG.email}\nClaiming: ${restaurantName}`;
+    const details = `PuneDigital Agency Contact:\nWhatsApp: +${AGENCY_CONFIG.whatsapp}\nEmail: ${AGENCY_CONFIG.email}\nClaiming: ${restaurantName}`;
     navigator.clipboard.writeText(details);
     setCopied(true);
     setTimeout(() => setCopied(false), 2500);
@@ -227,7 +227,7 @@ export function PricingDrawer({
                     Need Custom Additions or Immediate Onboarding in Pune?
                   </h4>
                   <p className="text-xs text-slate-400">
-                    Reach our lead tech team directly via WhatsApp, Phone Call, or Official Email.
+                    Reach our lead team directly via WhatsApp or Official Email.
                   </p>
                 </div>
 
@@ -236,23 +236,15 @@ export function PricingDrawer({
                     href={`https://wa.me/${AGENCY_CONFIG.whatsapp}?text=${encodeURIComponent(`Hi! I am the owner of ${restaurantName} and want to discuss claiming our official website.`)}`}
                     target="_blank"
                     rel="noreferrer"
-                    className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold transition shadow-sm active:scale-95"
+                    className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold transition shadow-md shadow-emerald-600/20 active:scale-95"
                   >
-                    <MessageSquare className="w-3.5 h-3.5" />
-                    <span>WhatsApp</span>
+                    <MessageSquare className="w-4 h-4" />
+                    <span>Chat on WhatsApp</span>
                   </a>
 
                   <a
-                    href={`tel:${AGENCY_CONFIG.phone}`}
-                    className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-amber-500 hover:bg-amber-400 text-slate-950 text-xs font-black transition shadow-sm active:scale-95"
-                  >
-                    <Phone className="w-3.5 h-3.5" />
-                    <span>Call Mobile</span>
-                  </a>
-
-                  <a
-                    href={`mailto:${AGENCY_CONFIG.email}?subject=${encodeURIComponent(`Website Claim Inquiry: ${restaurantName}`)}&body=${encodeURIComponent(`Hi PuneDigital Team,\n\nI want to discuss launching the website for ${restaurantName}.\n\nMy Contact Number: \nBest time to call: `)}`}
-                    className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-bold transition border border-slate-700 active:scale-95"
+                    href={`mailto:${AGENCY_CONFIG.email}?subject=${encodeURIComponent(`Website Claim Inquiry: ${restaurantName}`)}&body=${encodeURIComponent(`Hi PuneDigital Team,\n\nI want to discuss launching the website for ${restaurantName}.\n\nRestaurant: ${restaurantName}\nBest contact channel: WhatsApp / Email`)}`}
+                    className="inline-flex items-center gap-1.5 px-4 py-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-bold transition border border-slate-700 active:scale-95"
                   >
                     <Mail className="w-3.5 h-3.5" />
                     <span>Email Us</span>
@@ -260,7 +252,7 @@ export function PricingDrawer({
 
                   <button
                     onClick={copyContactDetails}
-                    className="inline-flex items-center gap-1.5 px-3 py-2 rounded-xl bg-slate-900 hover:bg-slate-800 text-slate-400 hover:text-slate-200 text-xs font-medium border border-slate-800 transition active:scale-95"
+                    className="inline-flex items-center gap-1.5 px-3 py-2.5 rounded-xl bg-slate-900 hover:bg-slate-800 text-slate-400 hover:text-slate-200 text-xs font-medium border border-slate-800 transition active:scale-95"
                     title="Copy Agency Contact Information"
                   >
                     {copied ? (
@@ -280,11 +272,13 @@ export function PricingDrawer({
 
               {/* Contact Information Display Bar */}
               <div className="mt-4 pt-3 border-t border-slate-800/80 flex flex-wrap items-center justify-between text-[11px] text-slate-400 gap-2">
-                <span className="font-mono text-slate-300">
-                  📞 Mobile: <b>{AGENCY_CONFIG.phone}</b>
+                <span className="font-mono text-emerald-400 font-bold flex items-center gap-1.5">
+                  <MessageSquare className="w-3.5 h-3.5" />
+                  <span>Official WhatsApp: <b>+{AGENCY_CONFIG.whatsapp}</b></span>
                 </span>
-                <span className="font-mono text-slate-300">
-                  ✉️ Email: <b>{AGENCY_CONFIG.email}</b>
+                <span className="font-mono text-slate-300 flex items-center gap-1.5">
+                  <Mail className="w-3.5 h-3.5 text-amber-400" />
+                  <span>Email: <b>{AGENCY_CONFIG.email}</b></span>
                 </span>
                 <span className="text-slate-400">
                   📍 {AGENCY_CONFIG.city}

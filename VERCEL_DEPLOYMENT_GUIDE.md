@@ -22,8 +22,7 @@ Add the following variables (check **Production**, **Preview**, and **Developmen
 | `AGENCY_SECRET_PASSCODE` | `pune2026` *(or your chosen password)* | **Unlocks `/agency` on Vercel**. Without this, `/agency` returns `404 Not Found`. |
 | `GOOGLE_PLACES_API_KEY` | `your_google_cloud_places_key` | Enables real Pune cafe photos, ratings, reviews, and address sync. |
 | `NEXT_PUBLIC_BASE_URL` | `https://your-project.vercel.app` | Generates correct live URLs in outreach pitch drafts. |
-| `NEXT_PUBLIC_AGENCY_PHONE` | `+91 98230 45678` *(your phone)* | Direct mobile call link when client clicks "Claim Site". |
-| `NEXT_PUBLIC_AGENCY_WHATSAPP` | `919823045678` *(your WhatsApp)* | Pre-filled WhatsApp claim message sender. |
+| `NEXT_PUBLIC_AGENCY_WHATSAPP` | `919823045678` *(your WhatsApp)* | Pre-filled WhatsApp claim message recipient (no phone calls needed). |
 | `NEXT_PUBLIC_AGENCY_EMAIL` | `contact@punedigital.in` *(your email)* | Pre-filled email claim draft recipient. |
 
 Click **Save** after entering each variable.
